@@ -17,4 +17,7 @@ length(tree$tip.label)
 ## so all the names in the query list are not on the tree
 ## this is possibly because of synonymy issues?
 
+missing_tips = tree$tip.label[!(tree$tip.label %in% sp)]
 
+write.table(missing_tips, file='./query_names/missing_tank_tree_tips.txt',
+            row.names=F, col.names=F, quote=F)
