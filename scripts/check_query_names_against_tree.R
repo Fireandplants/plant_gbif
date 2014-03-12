@@ -21,3 +21,10 @@ missing_tips = tree$tip.label[!(tree$tip.label %in% sp)]
 
 write.table(missing_tips, file='./query_names/missing_tank_tree_tips.txt',
             row.names=F, col.names=F, quote=F)
+
+## generate a complete list to send for a gbif query
+all_sp = unique(c(tree$tip.label, sp))
+all_sp = sub('_', ' ', all_sp)
+
+write.table(all_sp, file='./query_names/taxa_for_big_phylo_gbif_query_03_12_2014.txt',
+            row.names=F, col.names=F, quote=F) 
