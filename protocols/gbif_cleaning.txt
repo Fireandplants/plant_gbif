@@ -11,6 +11,6 @@ See comments in issue thread: https://github.com/Fireandplants/bigphylo/issues/1
    See Michelle Greve's email 3/07/2014 and other emails in thread. I'm less optimistic about this for the bigphylo project, but a simple version may be possible.  This may be quite viable for the detailed phylogeny projects.
 5. Filter records near GBIF HQ - apparently some records have been assigned coordinates of GBIF when no other coordinate is available. 
 6. Filter records in the ocean (obvious but important)
-7. Filter on last 20 years (OPTIONAL)
+7. Preferentially use most recent records: For species with > 100 records in last 20 years use those records. For others, use all records.
 8. Filter for records with >= 100 locations (relax slightly?)
 9. Highlight records in which the coordinate doesn't match the recorded country and continent as this could indicate an error in the coordinate
