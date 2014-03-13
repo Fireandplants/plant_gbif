@@ -1,9 +1,11 @@
-#+TITLE: GBIF data cleaning
+GBIF data cleaning
+==================
 
 There has been ongoing discussion among all of the folks planning on using location data on how to best clean that data, deal with human impact, plantations, invasives, etc.
 See comments in issue thread: https://github.com/Fireandplants/bigphylo/issues/1 and the email thread involving detailed all phylogeny group people.  The steps below are based on suggestions made by Sally, Caroline, Beth, Amy, Michelle, Dan and others.
 
-* Cleaning steps
+Cleaning steps
+--------------
 1. Filter Location precision (lat/lon decimal places)
 2. Filter on human impact  (method via Sally, Beth). Pick cutoff? 30?  http://sedac.ciesin.columbia.edu/data/set/wildareas-v2-human-footprint-geographic
 3. Filter on transformed landscape (should be less restrictive than above, but intersect anyway): https://lpdaac.usgs.gov/products/modis_products_table/mcd12q1
