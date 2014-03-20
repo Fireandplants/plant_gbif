@@ -23,6 +23,9 @@ nrow(more100)
 sum(prelim.res$count == 0)
 #[1] 4866
 
+## graphical summary
+plot(density(log10(prelim.res$count)))
+
 ## read in tree
 tree = read.tree('../bigphylo/Tank-tree/Vascular_Plants_rooted.dated.tre')
 tree_sp = sub('_', ' ', tree$tip.label)
@@ -38,4 +41,6 @@ sum(!(tree_sp %in% prelim.res$binomial[prelim.res$count > 0]))
 
 tree_sp_mi = tree_sp[!(tree_sp %in% prelim.res$binomial[prelim.res$count > 0])]
 
+## examine tnrs results --------------------------------------------------------
+tnrs = read.csv('./query_names/taxa_for_big_phylo_tnrs.csv') 
 
