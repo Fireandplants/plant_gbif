@@ -33,13 +33,15 @@ sum(b)
 
 agrep("Quercus alba", qnames, 3)
 
-# ok, craziness, match verythng against everything. Well, for first 1000 for
-# now. Not useful, just a demo
-bigl = map(lambda x : agrep(x, qnames, 1), qnames)
+# # ok, craziness, match verythng against everything. Don't try this at home.
+# bigl = map(lambda x : agrep(x, qnames, 1), qnames)
 
 
 
-[x for x in bigl if len(x) > 1]
+# temp = [x for x in bigl if len(x) > 1]
+# len(temp)
+# # 4497
+# # 
 
 # >>> qnames[429]
 # 'Asplenium montanum'
@@ -47,5 +49,12 @@ bigl = map(lambda x : agrep(x, qnames, 1), qnames)
 # 'Asplenium fontanum'
 # >>> 
 
-
-
+# example:
+# >>> qnames[87600]
+# 'Xanthostemon multiflorum'  # a misspelling
+# >>> qnames[87601]
+# 'Xanthostemon multiflorus'  # in TPL
+# >>> qnames[87609]
+# 'Xanthostemon sulfureum'
+# >>> qnames[87610]
+# 'Xanthostemon sulfureus'   # accepted name
