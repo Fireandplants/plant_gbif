@@ -46,3 +46,29 @@ head(syn.d.sorted)
 ## So, why?
 ## ???
 
+## Are there names in the accepted column that are not in the synonym column?
+## There should not be if names with no synonyms are mapped to themselves.
+
+missing.acc <- tpl$accepted[!tpl$accepted %in% tpl$synonym]
+length(missing.acc)
+# [1] 2621
+head(missing.acc,15)
+##  [1] Abies_borisii-regis    Abies_borisii-regis    Abies_borisii-regis   
+##  [4] Acacia_pseudo-intsia   Acaena_novae-zelandiae Acaena_novae-zelandiae
+##  [7] Acer_coriaceum         Acer_coriaceum         Acer_coriaceum        
+## [10] Acer_martini           Acer_varbossanium      Achillea_erba-rotta   
+## [13] Achillea_erba-rotta    Achillea_erba-rotta    Achillea_erba-rotta
+
+# All hyphenated?
+missing.hyphenated <- missing.acc[grepl("-", missing.acc, fixed=TRUE)]
+length(missing.hyphenated)
+# [1] 1765
+# Not all, but about half
+# How many total hyphenated?
+hyphenated <- tpl$accepted[grepl("-", tpl$accepted, fixed=TRUE)]
+# [1] 1765
+# so every hyphenated name is missing from left hand side!
+# Any on left?
+hyphenated.syn <- tpl$synonym[grepl("-", tpl$synonym, fixed=TRUE)]
+length(hyphenated.syn)
+[1] 0
