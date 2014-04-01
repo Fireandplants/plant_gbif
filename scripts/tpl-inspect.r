@@ -50,25 +50,24 @@ head(syn.d.sorted)
 ## There should not be if names with no synonyms are mapped to themselves.
 
 missing.acc <- tpl$accepted[!tpl$accepted %in% tpl$synonym]
-length(missing.acc)
-# [1] 2621
-head(missing.acc,15)
-##  [1] Abies_borisii-regis    Abies_borisii-regis    Abies_borisii-regis   
-##  [4] Acacia_pseudo-intsia   Acaena_novae-zelandiae Acaena_novae-zelandiae
-##  [7] Acer_coriaceum         Acer_coriaceum         Acer_coriaceum        
-## [10] Acer_martini           Acer_varbossanium      Achillea_erba-rotta   
-## [13] Achillea_erba-rotta    Achillea_erba-rotta    Achillea_erba-rotta
+length(unique(missing.acc))
+# [1] 1107
+head(unique(missing.acc))
+## > head(unique(missing.acc))
+## [1] Abies_borisii-regis    Acacia_pseudo-intsia   Acaena_novae-zelandiae
+## [4] Acer_coriaceum         Acer_martini           Acer_varbossanium
 
-# All hyphenated?
+# Are many hyphenated specific epithets?
 missing.hyphenated <- missing.acc[grepl("-", missing.acc, fixed=TRUE)]
-length(missing.hyphenated)
-# [1] 1765
+length(unique(missing.hyphenated))
+# [1] 556
 # Not all, but about half
 # How many total hyphenated?
 hyphenated <- tpl$accepted[grepl("-", tpl$accepted, fixed=TRUE)]
-# [1] 1765
+length(unique(hyphenated))
+# [1] 556
 # so every hyphenated name is missing from left hand side!
 # Any on left?
 hyphenated.syn <- tpl$synonym[grepl("-", tpl$synonym, fixed=TRUE)]
-length(hyphenated.syn)
+length(unique(hyphenated.syn))
 [1] 0
