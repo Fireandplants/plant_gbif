@@ -8,11 +8,6 @@ See the usage for more information.
 
 This could be speeded up by cacheing the lookup dictionaries; as it works now, the entire lookup data is re-read each time the program is run.  But it works.
 
-
-lookup, expand a canonical list or merge list containing synonyms.
-
-This looks good Beth.  I have explored this some.  One thing that I discovered: the original problem I noted when opening this issue still holds, but it is simply characteristic of TPL.  The statement "there is ONE accepted name for each unique name", is only true when one includes authors. In fact, ignoring authorship, there are some synonyms that match to multiple accepteds (eg "Amaryllis dubia").  No way around it, but it does mean that expanding a canonical list is not completely reversible, one cannot merge back to the same set of names exactly.  Well, I'm working on a solution one, but it is a more complicated problem than searching through lists of 'sister' synonyms.  It is not the end of the world in any case
-
 """
 
 __version__ =    '''0.2'''
