@@ -24,8 +24,6 @@ tpl_logger = logging.getLogger('tpl_logger')
 
 # The Plant List synonymy table:
 TPL_FILE = "../theplantlist1.1/TPL1.1_synonymy_list"
-# default canonical names file if none given
-CANONICAL_NAMES_FILE = "../../bigphylo/species/big-phylo-leaves.txt"
 
 # global dicts
 syn2accepted = {}
