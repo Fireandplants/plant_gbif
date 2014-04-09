@@ -2,11 +2,14 @@
 
 """This utility creates a synonym table from The Plant List data.
 
-Allows expansion of a names list to a larger list including those names and all synonyms.  The merge action allows merging to a canonical list of names (not necessarily TPL accepted names, although that is the default).
+Allows expansion of a names list to a larger list including those names and all
+synonyms. The merge action allows merging to a canonical list of names (not
+necessarily TPL accepted names, although that is the default).
 
 See the usage for more information.
 
-This could be speeded up by cacheing the lookup dictionaries; as it works now, the entire lookup data is re-read each time the program is run.  But it works.
+This could be speeded up by cacheing the lookup dictionaries; as it works now,
+the entire lookup data is re-read each time the program is run. But it works.
 
 """
 
