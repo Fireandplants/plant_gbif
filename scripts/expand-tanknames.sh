@@ -1,7 +1,7 @@
  #!/usr/bin/env bash
 
 TANKNAMES="../../bigphylo/species/big-phylo-leaves.txt"
-EXPANDED_NAMES="../query_names/taxa_for_bigphylo_gbif_query_04_08_14.txt"
+EXPANDED_NAMES="../query_names/tanknames-expanded.txt"
 
 python synonymize.py -a expand $TANKNAMES >> $EXPANDED_NAMES
 
