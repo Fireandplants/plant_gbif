@@ -1,4 +1,5 @@
 # R code ignores
+data
 *.Rhistory
 *.R[dD]ata
 *.DS_Store
