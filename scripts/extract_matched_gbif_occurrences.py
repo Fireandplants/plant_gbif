@@ -1,4 +1,11 @@
-## 
+
+
+## script to cycle through entire huge gbif platae data dump and check each
+
+## name against tow alternative lookups, Jan Legin's synonym table via the gbif
+## backbone phylogeny and our own expanded takname to gbif lookup created by
+## fuzzy match
+ 
 import pandas as pd
 import zipfile as zf
 
