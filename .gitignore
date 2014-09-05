@@ -1,6 +1,6 @@
 # R code ignores
 *.Rhistory
-*.Rdata
+*.R[dD]ata
 *.DS_Store
 *.Rapp.history
 
