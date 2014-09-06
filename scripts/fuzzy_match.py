@@ -63,12 +63,14 @@ def genus_species(names):
 sets."""
     genera = {}
     for name in names:
-        parts = name.split()  # ignore all parts after
-        genus = parts[0]
-        se = parts[1]
-        genera.setdefault(genus, set())
-        genera[genus].add(se)
-
+        try :
+            parts = name.split()  # ignore all parts after
+            genus = parts[0]
+            se = parts[1]
+            genera.setdefault(genus, set())
+            genera[genus].add(se)
+        except :
+            print parts
     return(genera)
 
 def best_jw_match(pattern, matches, jw_threshold):
