@@ -10,13 +10,13 @@ library(stringr)
 ## matches in which both names are a TPL name as those are probably false
 ## positives.
 
-gbif2tank <-  read.csv("../query_names/gbif_tank_lookup_140610-B.txt", stringsAsFactors=FALSE)
+gbif2tank <-  read.csv("../query_names/gbif_tank_lookup_140906.csv", stringsAsFactors=FALSE)
 names(gbif2tank) <- c("gbif","tank", "genus_jw", "se_jw", "gswitch")
 fmatches <- subset(gbif2tank, tank!=gbif)
 length(fmatches$gbif)
 
 
-allgbif <- read.csv("../data/query_names/gbif-occurrences-names.txt", header=FALSE, stringsAsFactors=FALSE)$V1
+allgbif <- read.csv("../query_names/gbif-occurrences-names_140905.txt", header=FALSE, stringsAsFactors=FALSE)$V1
 unmatched <- allgbif[! allgbif %in% gbif2tank$gbif]
 length(unmatched)
 length(gbif2tank$gbif)
@@ -50,17 +50,22 @@ keep <- subset(gbif2tank, !remove)
 keep <- keep[with(keep,order(se_jw)),]
 length(subset(keep, se_jw < 0.96)$gbif)
 
-head(keep[with(keep, order(se_jw)),])
+head(keep[with(keep, order(se_jw)),], 100)
 # now manually check other suspects!
 
-write.csv(gbif2tank, "../query_names/gbif_tank_lookup_140610-B_cleaned.csv", row.names=FALSE)
+write.csv(keep, "../query_names/gbif_tank_lookup_140906_cleaned.csv", row.names=FALSE)
 
 ###
+##Now do some more removal manually:
+## 1. any genus mismatch when both species are in TPL
+## 2. Any case were both are in TPL and se differences is anything but a clear minor mispelling. Eg sylvestris vs silvestris
+## 3. Any case were difference is definite alternative latin: eg "micro" for "macro" should not match, so remove depsite only one char diff.
+##
+###
 
-checked_names <- read.csv("../query_names/gbif_tank_lookup_140610-B_cleaned_manually_checked.csv", stringsAsFactors=FALSE)
+checked_names <- read.csv("../query_names/gbif_tank_lookup_140906_cleaned_manual.csv", stringsAsFactors=FALSE)
 
-checked_names$keep.manual[is.na(checked_names$keep.manual)] <- ! checked_names$remove[is.na(checked_names$keep.manual)]
-
-final.lookup <- subset(checked_names, keep.manual)
+checked_names$manual.remove[is.na(checked_names$manual.remove)] <- FALSE
+final.lookup <- subset(checked_names, ! (remove | manual.remove))
 
 write.csv(final.lookup, "../query_names/gbif_tank_lookup_final.csv", row.names=FALSE)
