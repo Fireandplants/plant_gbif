@@ -55,13 +55,13 @@ head(keep[with(keep, order(se_jw)),], 100)
 
 write.csv(keep, "../query_names/gbif_tank_lookup_140906_cleaned.csv", row.names=FALSE)
 
-###
-##Now do some more removal manually:
+## Now do some more removal manually:
+
 ## 1. any genus mismatch when both species are in TPL
-## 2. Any case were both are in TPL and se differences is anything but a clear minor mispelling. Eg sylvestris vs silvestris
-## 3. Any case were difference is definite alternative latin: eg "micro" for "macro" should not match, so remove depsite only one char diff.
-##
-###
+## 2. Any case were both are in TPL and se differences is anything but a clear
+## minor mispelling. Eg sylvestris vs silvestris
+## 3. Any case were difference is definite alternative latin: eg "micro" for
+## "macro" should not match, so remove depsite only one char diff.
 
 checked_names <- read.csv("../query_names/gbif_tank_lookup_140906_cleaned_manual.csv", stringsAsFactors=FALSE)
 

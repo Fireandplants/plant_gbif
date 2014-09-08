@@ -43,7 +43,7 @@ for i,h in enumerate(gbif_header) :
 #print(hdict)
 
 occurences = zf.ZipFile('/mnt/gis/gbif_plantae/0002274-140616093749225.zip').open("occurrence.txt", "r")
-output_file = codecs.open('gbif-occurrences_extracted_140906.csv', 'w', "utf-8")
+output_file = codecs.open('../data/gbif-occurrences_extracted_140906.csv', 'w', "utf-8")
 output_file.write("gbifname\texpandedname\ttankname\t")
 for h in gfields:
             output_file.write(h + "\t")
