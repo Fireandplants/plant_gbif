@@ -1,8 +1,12 @@
 # R code ignores
+data
 *.Rhistory
-*.Rdata
+*.R[dD]ata
 *.DS_Store
 *.Rapp.history
 
-# specific ignroes, intermediate files
+# python
+*.pyc
+
+# specific ignores, intermediate files
 /theplantlist1.1/tpl_make_compact_flymake.py

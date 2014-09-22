@@ -29,11 +29,18 @@ TPL_FILE = "../theplantlist1.1/TPL1.1_synonymy_list"
 # global dicts
 syn2accepted = {}
 accepted2syn = {}
-tpl_accepted_names = []
+tpl_accepted_names = set()
 
 def read_names(src):
     """`src` is a file object)"""
-    return([line.rstrip() for line in src])
+    res = map(lambda x: x.split(), [line.rstrip() for line in src])
+    res = map(lambda x: x[0] + " " + x[1], res)
+    return(res)
+
+def make_binom(name):
+    """Converts a possibly three or more part name to a simple binomial."""
+     l = name.split()
+     return(l[0] + " " + l[1])
 
 def make_tpl_dicts(tpl):
     """Create dictionaries from the tpl ragged array. `tpl` is a file object. There
@@ -44,10 +51,13 @@ course multiple synonyms per accepted, so both dictionaries must be string:set
     syn2accepted.clear()
     accepted2syn.clear()  
     for line in tpl:
-        names = line[:-1].replace("_"," ").split(",")  # replace underscores with spaces
+        # Note: line below differs from version in taxon-utils. We are
+        # explicitly ignoring everying after the specfic epithet and matching
+        # just on binomials for now
+        names = map(make_binom, line[:-1].replace("_"," ").split(","))  # replace underscores with spaces
         syns = set(names)
         a = names[0]
-        tpl_accepted_names.append(a)  # only used as a default canonical list for merging
+        tpl_accepted_names.add(a)  # only used as a default canonical list for merging
         accepted2syn[a] = syns
         for n in syns :
             if syn2accepted.has_key(n) :
@@ -74,6 +84,26 @@ def expand_names(names):
         r.update(all_synonyms(name))
     return(r)
 
+def bad2good(bad, goodnames=tpl_accepted_names):
+    res = bad
+    if not bad in goodnames :  # name is not already canonical
+        # 2 possibilities: it is an accepted name or a synonym
+        accepteds = syn2accepted.get(bad, set() )
+        cnames = accepteds.intersection(goodnames)
+        if len(cnames) > 0 : # accepts include canonical(s), pop one
+            res = cnames.pop()
+        else : # last try; maybe there is a canonical sister synonym
+            syns = all_synonyms(bad) # get all sister syns of a
+            snames = syns.intersection(goodnames)
+            if len(snames) > 0 :  # might was well take first one, no way to choose:
+                res = snames.pop()
+            # if this doesn't work, stick with original
+            else :
+                tpl_logger.warning("Name not found: " + bad)
+
+    return(res)
+
+
 def merge_names(badnames, goodnames=tpl_accepted_names):
     """Merge list of names using list or set "goodnames" as canonical names.
     Modifies badnames, but with synonyms replaced. If synonym not found, use
@@ -82,20 +112,7 @@ def merge_names(badnames, goodnames=tpl_accepted_names):
     """
     g = set(goodnames)
     for i,n in enumerate(badnames):
-        if not n in g :  # name is not already canonical
-            # 2 possibilities: it is an accepted name or a synonym
-            accepteds = syn2accepted[n]
-            cnames = accepteds.intersection(g)
-            if len(cnames) > 0 : # accepts include canonical(s), pop one
-                badnames[i] = cnames.pop()
-            else : # last try; maybe there is a canonical sister synonym
-                syns = all_synonyms(n) # get all sister syns of a
-                snames = syns.intersection(g)
-                if len(snames) > 0 :  # might was well take first one, no way to choose:
-                    badnames[i] = snames.pop()
-                # if this doesn't work, stick with original
-                else :
-                    tpl_logger.warning("Name not found: " + n)
+        badnames[i] = bad2good(n, goodnames)
     return
 
 def main():
@@ -142,7 +159,7 @@ def main():
         r = expand_names(names)
     elif options.action=="merge":
         if options.CANONICAL_NAMES_FILE :
-            canonical = read_names(open(options.CANONICAL_NAMES_FILE))
+            canonical = read_names(codecs.open(options.CANONICAL_NAMES_FILE, "r", "utf-8"))
             merge_names(names, canonical)
         else :
             merge_names(names)
