@@ -32,6 +32,8 @@ def makeHeaderDict(s):
 
 ## make tpl dicts
 synonymize.make_tpl_dicts(codecs.open(synonymize.TPL_FILE, "r", "utf-8"))
+## make canonical lookup in synonymize
+synonymize.expand_names(goodnames) # necessary to make the canonial lookup
 
 ## create fuzzy matches lookup table
 fnames = {}
