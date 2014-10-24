@@ -1,10 +1,12 @@
+## Revision 2014-10-24 for new gbif data dump
+
 ## script to cycle through entire huge gbif plantae data dump and check each
 ## name against the fuzzy match table (expanded tank et al names to gbif names
 ## lookup).
 
 ## Note that rather than using the "merge" action provided by the command line
 ## synonymize.py script, this script imports synonymize and uses some functions
-## directly. This is in the interest of speed: it takes along time to go
+## directly. This is in the interest of speed: it takes a long time to go
 ## through 132 million gbif records, let's only do it once and get the
 ## canonical name while we are visiting each record.
 
@@ -38,13 +40,12 @@ for l in fuzzyMatchesFile:
     fields = l.split(",")
     fnames[ fields[0][1:-1] ] = fields[1][1:-1] # lookup accepted to searched
 
-
 ## get the list of fields we want
 gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
 
-occurences = zf.ZipFile('/mnt/gis/gbif_plantae/0002274-140616093749225.zip').open("occurrence.txt", "r")
-output_file = codecs.open('../data/gbif-occurrences_extracted_140906.csv', 'w', "utf-8")
+occurences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').open("occurrence.txt", "r")
+output_file = codecs.open('../data/gbif-occurrences_extracted_141024.csv', 'w', "utf-8")
 output_file.write("gbifname\texpandedname\ttankname\t")
 for h in gfields:
             output_file.write(h + "\t")
@@ -77,7 +78,7 @@ for l in occurences:
         resline = name + "\t" + res + "\t"
         
         # get all the needed fields
-        if (nmatches % 1000 == 0) : print(str(n) + "\t" + str(nmatches) +": " + resline)
+        if (nmatches % 5000 == 0) : print(str(n) + "\t" + str(nmatches) +": " + resline)
         tankname = synonymize.bad2good(res, goodnames)
         resline = resline + tankname + "\t"
         for h in gfields:
@@ -86,6 +87,4 @@ for l in occurences:
             resline = resline + f[hdict[h]] + "\t"
         output_file.write(resline + "\n")
 
-#    if n > 10000 : break
-
-
+    if n > 10000 : break

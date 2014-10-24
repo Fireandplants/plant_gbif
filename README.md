@@ -32,6 +32,8 @@ python extract_gbif_names.py
 
 This will create the names list. The current version is `../query_names/gbif-occurrences-names_141023.csv`. This is all unique binomial names in the GBIF Plantae occurrences data.
 
+NOTE: because we downloaded GBIF Plantae data twice (July 2 2014, and October 22 2014), I did not need to re-run fuzzy matching on all names the second time.  Therefore, There is a short R script, `scripts/new-gbif-data-check.R` which reads both full GBIF binomial names lists and saves only the new names from the October data dump as `query_names/gbif-occurrences-names_141023_newonly.txt`.
+
 Now we can create a lookup table that maps each name in this list to the expanded canonical names list, omitting any name that does not have a sufficiently close match according to the settings in `fuzzy_match.py`
 
 ```
@@ -42,17 +44,18 @@ The resulting table is `../query_names/gbif_tank_lookup_140906.csv`. Raw, this r
 
 The manual step could probably be eliminated with enough special cases hard-coded in the matching script. See the comments near the bottom of that script for the rules used in manual marking for removal.
 
+NOTE: For adding the new data from the October GBIF datra dump, I used a new version of this script which only operates on the new names: `make_tank_gbif_fuzzy_lookup_newonly.py` That script saves the lookup table for new names only as `../query_names/gbif_tank_lookup_141024_newonly.csv`. A new script, `scripts/clean_gbif2tankname_141024.R` , checks for suspected false positives in that data and saves the lookup table as `../query_names/gbif_tank_lookup_141024_newonly_cleaned.csv`.  The manually checked version of that, `../query_names/gbif_tank_lookup_141024_newonly_cleaned_manual.csv` is then read in using the last lines of code in `scripts/clean_gbif2tankname_141024.R` and this is merged with the 140916 lookup table to form `gbif-tank_lookup_final.csv`.  This is the complete lookup table useable on the October GBIF download.
+
 ### 3. Extract matching records from the GBIF Plantae data ###
 
-This step reads line by line through the 132 million GBIF occurrence records and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_tank_lookup_final.csv`. 
-
+This step reads line by line through the 140 million GBIF occurrence records (October 2014 download) and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_tank_lookup_final.csv`. 
 
 ```
 python extract_matched_gbif_occurrences.py
 
 ```
 
-The result is saved as a large tab-separated file, current version is `gbif-occurrences_extracted_140906.csv`.
+The result is saved as a large tab-separated file, current version is `gbif-occurrences_extracted_141024.csv`.
 
 This file should go to [Dan McGlinn][dmcglinn] for further cleaning (removing species for which there are not at least 50 records, etc).
 
