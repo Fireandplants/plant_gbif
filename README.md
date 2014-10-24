@@ -24,13 +24,13 @@ This will create a names list, `../query_names/tanknames-expanded.txt`.  It read
 
 This step creates a lookup table that associates every possible taxon binomial in the full GBIF Plantae occurrence database with its match in the expanded canonical names list created in step 1. The code uses `fuzzy_match.py` from the taxon-name-utils repository to do matching based on a combination of Levenshtein distances and Jaro-Winkler distances. See the source files for details.
 
-First, we must extract all possible taxon binomials from the full GBIF Plantae data. Schwilk downloaded the the full GBIF Plantae data on 2014-07-02.  This is approximately 132 million occurrence records.  This data, stored as a compressed zip file is not in the git repository, but is referred to by the  `extract_gbif_names.py` script.   store all large data such as this in the `data/` directory which is ignored by git (see `.gitignore`.
+First, we must extract all possible taxon binomials from the full GBIF Plantae data. Schwilk downloaded the the full GBIF Plantae data on 2014-10-22 (`0000380-141021104744918.zip`). This is approximately 140 million occurrence records. This data, stored as a compressed zip file is not in the git repository, but is referred to by the `extract_gbif_names.py` script. Store all large data such as this in the `data/` directory which is ignored by git (see `.gitignore`.
 
 ```
 python extract_gbif_names.py
 ```
 
-This will create the names list. The current version is `../query_names/gbif-occurrences-names_140905.txt`. This is all unique binomial names in the GBIF Plantae occurrences data.
+This will create the names list. The current version is `../query_names/gbif-occurrences-names_141023.csv`. This is all unique binomial names in the GBIF Plantae occurrences data.
 
 Now we can create a lookup table that maps each name in this list to the expanded canonical names list, omitting any name that does not have a sufficiently close match according to the settings in `fuzzy_match.py`
 
