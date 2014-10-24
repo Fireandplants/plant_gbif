@@ -39,8 +39,8 @@ def read_names(src):
 
 def make_binom(name):
     """Converts a possibly three or more part name to a simple binomial."""
-     l = name.split()
-     return(l[0] + " " + l[1])
+    l = name.split()
+    return(l[0] + " " + l[1])
 
 def make_tpl_dicts(tpl):
     """Create dictionaries from the tpl ragged array. `tpl` is a file object. There
