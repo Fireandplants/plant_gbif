@@ -47,19 +47,6 @@ length(subset(keep, se_jw < 0.96)$gbif)
 
 head(keep[with(keep, order(se_jw)),], 100)
 
-## This section simply to take advantage of the fact we ahve run many of these
-## matches on an earlier GBIF download os we can use previously manually
-## checked names to save time.
-checked_names1 <- read.csv("../query_names/gbif_tank_lookup_140906_cleaned_manual.csv",
-                          stringsAsFactors=FALSE)
-checked_names2 <- read.csv("../query_names/gbif_tank_lookup_141024_newonly_cleaned_manual.csv",
-                              stringsAsFactors=FALSE)
-## added about 600 new lookups
-checked_names <- rbind(checked_names1, checked_names2)
-checked_names$manual.remove[is.na(checked_names$manual.remove)] <- FALSE
-checked_names <- checked_names[, c(1,2,9)] # just get gbif, tank and manual_remove
-keep <- merge(keep, checked_names, by = c("gbif", "tank"), all.x=TRUE)
-
 # now manually check other suspects, so write to file.
 write.csv(keep, "../query_names/gbif_tank_lookup_141024_cleaned.csv", row.names=FALSE)
 
