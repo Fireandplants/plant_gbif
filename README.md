@@ -30,7 +30,7 @@ python extract_gbif_names.py
 
 This will create the names list. The current version is `../query_names/gbif-occurrences-names_141023.csv`. This is all unique binomial names in the GBIF Plantae occurrences data.
 
-### 2. Conduct fuzzy name matching
+### 3. Conduct fuzzy name matching
 
 This step creates a lookup table that associates every possible taxon binomial in the full GBIF Plantae occurrence database with its match in the expanded canonical names list created in step 1. The code uses `fuzzy_match.py` from the taxon-name-utils repository to do matching based on a combination of Levenshtein distances and Jaro-Winkler distances. See the source files for details.
 
@@ -41,11 +41,11 @@ We can create a lookup table that maps each name in this list to the expanded ca
 python make_tank_gbif_fuzzy_lookup.py
 ```
 
-The resulting table is `../query_names/gbif_tank_lookup_141024.csv`. Raw, this results in XXXXX matched names from the expanded canonical list. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2tankname.R`. The lookup table saved by that R script is `gbif_tank_lookup_141024_cleaned.csv`.  After manually marking additional removals (false matches), the resulting file was saved as `gbif_tank_lookup_141024_cleaned_manual.csv`. The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as  `gbif-tank_lookup_final.csv`.
+The resulting table is `../query_names/gbif_tank_lookup_141024.csv`. Raw, this results in 67051 matched names from the expanded canonical list, leaving 381534 unmatched GBIF names. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2tankname.R`. The lookup table saved by that R script is `gbif_tank_lookup_141024_cleaned.csv`.  After manually marking additional removals (false matches), the resulting file was saved as `gbif_tank_lookup_141024_cleaned_manual.csv`. The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as  `gbif-tank_lookup_final.csv`.  This holds 65365 matches of which 3163 are fuzzy matches.
 
 The manual step could probably be eliminated with enough special cases hard-coded in the matching script. See the comments near the bottom of that R script for the rules used in manual marking for removal.
 
-### 3. Extract matching records from the GBIF Plantae data ###
+### 4. Extract matching records from the GBIF Plantae data ###
 
 This step reads line by line through the 140 million GBIF occurrence records (October 2014 download) and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_tank_lookup_final.csv`. 
 
