@@ -3,7 +3,8 @@
 TANKNAMES="../../bigphylo/species/big-phylo-leaves.txt"
 EXPANDED_NAMES="../query_names/tanknames-expanded.txt"
 
-python synonymize.py -a expand $TANKNAMES >$EXPANDED_NAMES
+# -b option forces binomial names
+python synonymize.py -b -a expand $TANKNAMES > $EXPANDED_NAMES
 
 # to merge the result, in $EXPANDED NAMES
 # python synonymize.py -a merge -c $TANKNAMES $EXPANDED_NAMES > ../query_names/merged_names.txt

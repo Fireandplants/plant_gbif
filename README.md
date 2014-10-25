@@ -1,9 +1,9 @@
 plant_gbif
 ==========
 
-This repository is for data and scripts for matching the taxon names in the [D.C. Tank phylogeny][TankTree] (see [Zanne et al 2013][Zanne-etal-2013]) with plant occurrence records in the Global Biodiversity Information Facility (GBIF) dataset. This is a step in the [bigphylo][bigphylo] project that is part of the Archibald and Lehman ["The co-evolution of plants and fire and consequences for the Earth system" NESCent workshop][FireAndPlants].
+This repository is for data and scripts for matching the taxon names in the [D.C. Tank phylogeny][TankTree] (see [Zanne et al 2013][Zanne-etal-2013]) with plant occurrence records in the [Global Biodiversity Information Facility (GBIF) dataset][GBIF]. This is a step in the [bigphylo][bigphylo] project that is part of the Archibald and Lehman ["The co-evolution of plants and fire and consequences for the Earth system" NESCent workshop][FireAndPlants].
 
-Note that all of these scripts read text files as utf-8 and immediately treat as unicode internally. All matching and comparisons work on unicode. All written output is encoded as utf-8. This has a slight speed penalty but is worth it and necessary as there are a lot of unicode characters in the GBIF data and some in other taxon name sources.
+These scripts read text files as utf-8 and immediately treat as unicode internally. All matching and comparisons work on unicode internally. All written output is encoded as utf-8. This has a slight speed penalty but is worth it and necessary as there are unicode characters in the GBIF data and some in other taxon name sources.
 
 Analysis steps / walkthrough
 ----------------------------
@@ -12,7 +12,7 @@ General code for steps 1-2 are in the [taxon-name-utils repository](https://gith
 
 ### 1. Create expanded list of canonical names ###
 
-Our canonical names for phylogenetic analyses are the tip names in the [Tank tree][TankTree]. We would like to search for occurrences of these species accounting for synonyms, so we use synonymize.py to expand the names list to all canonical names plus all synonyms. We use the data scraped from [The Plant List][TPL]by [Beth Forrestel][ejforrestel] around 3/30/2014 to conduct this expansion. This expansion can result in three part names (eg var. part after specific epithet), but all subsequent matching is on binomial part only.
+Our canonical names for phylogenetic analyses are the tip names in the [Tank tree][TankTree]. We would like to search for occurrences of these species accounting for synonyms, so we use synonymize.py to expand the names list to all canonical names plus all synonyms. We use the data scraped from [The Plant List][TPL]by [Beth Forrestel][ejforrestel] around 3/30/2014 to conduct this expansion. We explicitly force binomial names using the '-b' option to synonymize.py.
 
 ```
 expand_tanknames.sh
@@ -20,11 +20,9 @@ expand_tanknames.sh
 
 This will create a names list, `../query_names/tanknames-expanded.txt`.  It reads the canonical names from `../../bigphylo/species/big-phylo-leaves.txt`. This expanded names list includes each taxon label in the phylogeny as well as all synonyms.
 
-### 2. Conduct fuzzy name matching
+### 2. Extract all possible name binomials in the full GBIF occurrence data
 
-This step creates a lookup table that associates every possible taxon binomial in the full GBIF Plantae occurrence database with its match in the expanded canonical names list created in step 1. The code uses `fuzzy_match.py` from the taxon-name-utils repository to do matching based on a combination of Levenshtein distances and Jaro-Winkler distances. See the source files for details.
-
-First, we must extract all possible taxon binomials from the full GBIF Plantae data. Schwilk downloaded the the full GBIF Plantae data on 2014-10-22 (`0000380-141021104744918.zip`). This is approximately 140 million occurrence records. This data, stored as a compressed zip file is not in the git repository, but is referred to by the `extract_gbif_names.py` script. Store all large data such as this in the `data/` directory which is ignored by git (see `.gitignore`.
+First, we must extract all possible taxon binomials from the full GBIF Plantae data. Schwilk downloaded the the full GBIF Plantae data on 2014-10-22 (`0000380-141021104744918.zip`). This is approximately 140 million occurrence records. This data, stored as a compressed zip file is not in the git repository, but is referred to by the `extract_gbif_names.py` script. Store all large data such as this in the `data/` directory which is ignored by git (see `.gitignore`).
 
 ```
 python extract_gbif_names.py
@@ -32,19 +30,20 @@ python extract_gbif_names.py
 
 This will create the names list. The current version is `../query_names/gbif-occurrences-names_141023.csv`. This is all unique binomial names in the GBIF Plantae occurrences data.
 
-NOTE: because we downloaded GBIF Plantae data twice (July 2 2014, and October 22 2014), I did not need to re-run fuzzy matching on all names the second time.  Therefore, There is a short R script, `scripts/new-gbif-data-check.R` which reads both full GBIF binomial names lists and saves only the new names from the October data dump as `query_names/gbif-occurrences-names_141023_newonly.txt`.
+### 2. Conduct fuzzy name matching
 
-Now we can create a lookup table that maps each name in this list to the expanded canonical names list, omitting any name that does not have a sufficiently close match according to the settings in `fuzzy_match.py`
+This step creates a lookup table that associates every possible taxon binomial in the full GBIF Plantae occurrence database with its match in the expanded canonical names list created in step 1. The code uses `fuzzy_match.py` from the taxon-name-utils repository to do matching based on a combination of Levenshtein distances and Jaro-Winkler distances. See the source files for details.
+
+
+We can create a lookup table that maps each name in this list to the expanded canonical names list, omitting any name that does not have a sufficiently close match according to the settings in `fuzzy_match.py`.  sA hort python script accomplishes this:
 
 ```
 python make_tank_gbif_fuzzy_lookup.py
 ```
 
-The resulting table is `../query_names/gbif_tank_lookup_140906.csv`. Raw, this results in 59139 matched names from the expanded canonical list. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2tankname.R`. The lookup table saved by that R script is `gbif_tank_lookup_140906_cleaned.csv`.  After manually marking additional removals (false matches), the resulting file was saved as `gbif_tank_lookup_140906_cleaned_manual.csv`.  The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as  `gbif-tank_lookup_final.csv`.
+The resulting table is `../query_names/gbif_tank_lookup_141024.csv`. Raw, this results in XXXXX matched names from the expanded canonical list. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2tankname.R`. The lookup table saved by that R script is `gbif_tank_lookup_141024_cleaned.csv`.  After manually marking additional removals (false matches), the resulting file was saved as `gbif_tank_lookup_141024_cleaned_manual.csv`. The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as  `gbif-tank_lookup_final.csv`.
 
-The manual step could probably be eliminated with enough special cases hard-coded in the matching script. See the comments near the bottom of that script for the rules used in manual marking for removal.
-
-NOTE: For adding the new data from the October GBIF datra dump, I used a new version of this script which only operates on the new names: `make_tank_gbif_fuzzy_lookup_newonly.py` That script saves the lookup table for new names only as `../query_names/gbif_tank_lookup_141024_newonly.csv`. A new script, `scripts/clean_gbif2tankname_141024.R` , checks for suspected false positives in that data and saves the lookup table as `../query_names/gbif_tank_lookup_141024_newonly_cleaned.csv`.  The manually checked version of that, `../query_names/gbif_tank_lookup_141024_newonly_cleaned_manual.csv` is then read in using the last lines of code in `scripts/clean_gbif2tankname_141024.R` and this is merged with the 140916 lookup table to form `gbif-tank_lookup_final.csv`.  This is the complete lookup table useable on the October GBIF download.
+The manual step could probably be eliminated with enough special cases hard-coded in the matching script. See the comments near the bottom of that R script for the rules used in manual marking for removal.
 
 ### 3. Extract matching records from the GBIF Plantae data ###
 
@@ -55,9 +54,9 @@ python extract_matched_gbif_occurrences.py
 
 ```
 
-The result is saved as a large tab-separated file, current version is `gbif-occurrences_extracted_141024.csv`.
+The result is saved as a large tab-separated file, current version is `gbif-occurrences_extracted_141024.csv`.  This is our full species occurrence data.
 
-This file should go to [Dan McGlinn][dmcglinn] for further cleaning (removing species for which there are not at least 50 records, etc).
+This file should go to [Dan McGlinn][dmcglinn] for further cleaning.
 
 [bigphylo]: https://github.com/Fireandplants/bigphylo
 [ejforrestel]: https://github.com/ejforrestel

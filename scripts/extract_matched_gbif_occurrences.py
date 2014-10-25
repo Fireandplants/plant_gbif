@@ -89,4 +89,4 @@ for l in occurences:
             resline = resline + f[hdict[h]] + "\t"
         output_file.write(resline + "\n")
 
-    if n > 10000 : break
+#    if n > 10000 : break

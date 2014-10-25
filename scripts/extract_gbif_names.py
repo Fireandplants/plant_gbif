@@ -1,8 +1,14 @@
 #!/usr/env python
 
+## Dylan W. Schwilk
+
+## Extracts "species" field (latin binomials) from a GBIF occurrence download zip file
+
 import zipfile as zf
 import codecs
 
+GBIF_ZIP_FILE = '/mnt/gis/gbif_plantae/0000380-141021104744918.zip'
+OUTPUT_FILE = '../query_names/gbif-occurrences-names_141023.txt'
 
 def makeHeaderDict(s):
     gbif_header = s[:-1].split("\t")
@@ -11,12 +17,8 @@ def makeHeaderDict(s):
         hdict[h]=i
     return hdict
 
-
-occurences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').open("occurrence.txt", "r")
-output_file = codecs.open('../query_names/gbif-occurrences-names_141023.txt', 'w', "utf-8")
-
-
-
+occurences = zf.ZipFile(GBIF_ZIP_FILE).open("occurrence.txt", "r")
+output_file = codecs.open(OUTPUT_FILE, 'w', "utf-8")
 
 # get header
 for l in occurences:
@@ -37,7 +39,6 @@ for l in occurences:
     n = n + 1 
   #  if(n > 10) : break
     f = l[:-1].split("\t")
-  #  print(f)
   #  print(f[sp_index])
     res.add(f[sp_index] )
     if n%10000 == 0 : print(n)
