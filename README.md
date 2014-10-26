@@ -54,7 +54,7 @@ python extract_matched_gbif_occurrences.py
 
 ```
 
-The result is saved as a large tab-separated file, current version is `gbif-occurrences_extracted_141024.csv`.  This is our full species occurrence data with 80,758,224 occurrences.
+The result is saved as a large tab-separated file, current version is `gbif-occurrences_extracted_141026.csv`.  This is our full species occurrence data with 80,758,224 occurrences.
 
 This file should go to Dan McGlinn for further cleaning.
 
