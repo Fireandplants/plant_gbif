@@ -32,7 +32,7 @@ syn2accepted = {}
 accepted2syn = {}
 tpl_accepted_names = set()
 syn2canonical = {}  # for canonical names that may not equal tpl accepteds
-#canonical2syn = {}
+canonical_names = set()
 
 def read_names(src):
     """`src` is a file object)"""
@@ -43,7 +43,7 @@ def make_binom(name):
     l = name.split()
     return(l[0] + " " + l[1])
 
-def make_tpl_dicts(tpl, force_binom = False):
+def make_tpl_dicts(tpl, force_binom = False, scrub_var_subsp=False):
     """Create dictionaries from the tpl ragged array. `tpl` is a file object. There
 can be multiple accepteds per synonym (synonyms without author info) and of
 course multiple synonyms per accepted, so both dictionaries must be string:set
@@ -52,8 +52,13 @@ course multiple synonyms per accepted, so both dictionaries must be string:set
     syn2accepted.clear()
     accepted2syn.clear()  
     for line in tpl:
+        names = line[:-1].replace("_"," ")
+        if scrub_var_subsp :
+            names = names.replace(" var.", "") 
+            names = names.replace(" subsp.", "") 
+            names = names.replace(" f.", "") 
+        names = names.split(",")
         # replace underscores with spaces
-        names = line[:-1].replace("_"," ").split(",")
         if force_binom :
             names = map(make_binom, names)
         syns = set(names)
@@ -83,6 +88,7 @@ def expand_names(names):
     for name in names:
         syns = all_synonyms(name)
         syns.add(name)
+        canonical_names.add(name)
         for n in syns :
             syn2canonical[n] = name  ## this is the lookup table needed by bad2good
         r.update(syns)
@@ -90,14 +96,15 @@ def expand_names(names):
 
 def bad2good(bad, strict=True):
     """Note: you must run expand_names first so that syn2canonical is filled"""
+    if bad in canonical_names: return bad # avoid overwriting in case of
+                                          # non-unique merge
     if strict : default = ""
     else : default = bad
     return(syn2canonical.get(bad, default))
 
 def merge_names(badnames, goodnames=tpl_accepted_names, strict=False):
-    """Merge list of names using list or set "goodnames" as canonical names.
-    Modifies badnames, but with synonyms replaced. If synonym not found, use
-    actual name in badnames (strict=False)
+    """Merge list of names using list or set "goodnames" as canonical names. If
+    synonym not found, use actual name in badnames (strict=False)
 
     """
     g = set(goodnames)
@@ -130,6 +137,8 @@ def main():
     parser.add_option("-b", "--binomial", action="store_true",
                       dest="force_binomial", default=False,
                       help="Print INFO messages to stdout, default=%default")    
+    parser.add_option("-s", "--scrub", action="store_true", dest="scrub_var", default=False,
+                      help="Remove `var.` and `subsp.` from synonyms, default=%default")    
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Print INFO messages to stdout, default=%default")    
 
@@ -155,7 +164,7 @@ def main():
     # make the lookup. Note that TPL lacks non ascii chars, but for internal
     # consistency, let's keep everything unicode
     make_tpl_dicts(codecs.open(options.TPL_FILE, "r", "utf-8"), 
-                   force_binom=options.force_binomial)
+                   force_binom=options.force_binomial, scrub_var_subsp=options.scrub_var)
 
     # expand or merge
     if options.action=="expand" :
