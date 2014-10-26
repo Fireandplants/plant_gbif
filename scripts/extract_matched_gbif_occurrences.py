@@ -47,7 +47,7 @@ gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
 
 occurences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').open("occurrence.txt", "r")
-output_file = codecs.open('../data/gbif-occurrences_extracted_141024.csv', 'w', "utf-8")
+output_file = codecs.open('../data/gbif-occurrences_extracted_141026.csv', 'w', "utf-8")
 output_file.write("gbifname\texpandedname\ttankname\t")
 for h in gfields:
             output_file.write(h + "\t")
@@ -81,7 +81,7 @@ for l in occurences:
         
         # get all the needed fields
         if (nmatches % 5000 == 0) : print(str(n) + "\t" + str(nmatches) +": " + resline)
-        tankname = synonymize.bad2good(res, goodnames)
+        tankname = synonymize.bad2good(res)
         resline = resline + tankname + "\t"
         for h in gfields:
        #     print(h)
