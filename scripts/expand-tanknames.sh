@@ -10,7 +10,7 @@ python synonymize.py -b -a expand $TANKNAMES > $EXPANDED_NAMES
 # python synonymize.py -a merge -c $TANKNAMES $EXPANDED_NAMES > ../query_names/merged_names.txt
 
 # proof this is reversible :
-# diff -s <(sort $TANKNAMES) <(python synonymize.py -a merge -c $TANKNAMES $EXPANDED_NAMES | sort | uniq)
+diff -s <(sort $TANKNAMES) <(python synonymize.py -b -a merge -c $TANKNAMES $EXPANDED_NAMES | sort | uniq)
 
 ## output: Files /dev/fd/63 and /dev/fd/62 are identical
 
