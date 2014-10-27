@@ -32,10 +32,7 @@ def main():
     '''Command line program.  '''
     import sys   
     from optparse import OptionParser
-
-    # make sure stdin and stdout is in unicode
-    sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
-    
+   
     parser = OptionParser(usage=__usage__, version ="%prog " + __version__)
     parser.add_option("-o", "--output", action="store", type="string",
                       dest="output", default="split-chunk-out-", 
