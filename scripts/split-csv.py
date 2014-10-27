@@ -19,10 +19,10 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 gbif_logger = logging.getLogger('tpl_logger')
 
 
-def writeChunk(chunk, filename, header):
+def writeChunk(chunk, filename, header=None):
     gbif_logger.info("writing file: %s" % filename)
     ofile = codecs.open(filename, 'w', "utf-8")
-    ofile.write(header)
+    if header : ofile.write(header)
     for item in chunk:
         ofile.write(item)
     ofile.close()
@@ -39,6 +39,8 @@ def main():
                       help="Prefix name for output chunks")
     parser.add_option("-n", "--nrows", action="store", type="int",
                       dest="nrows", default=10000, help="Size of output chunks")
+    parser.add_option("-d", "--header", action="store_true", dest="include_header", default=False,
+                      help="Include header in each output chunk, default=%default")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Print INFO messages to stdout, default=%default")    
 
@@ -62,7 +64,7 @@ def main():
 
     file_iter = iter(infile)
     header = file_iter.next()
-
+    if not options.include_header : header = None
     n=0
     chunk = [""]*options.nrows
     for l in file_iter:
