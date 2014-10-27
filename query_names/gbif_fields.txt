@@ -3,7 +3,6 @@ datasetID
 basisOfRecord
 scientificName
 taxonID
-countryCode
 decimalLatitude
 decimalLongitude
 year
