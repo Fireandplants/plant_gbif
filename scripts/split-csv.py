@@ -2,22 +2,22 @@
 
 ## Dylan W. Schwilk
 
-## Split big csv file into chunks 
+"""This script will split a large txt file into separate file chunks of n rows
+each. The -o option dtermines the directory and name prefix for each chunk. The
+-d option controls adding the header to each chunk. See `split-csv.py -h` for
+options.
 
+"""
 
 __version__ =    '''0.1'''
 __program__ =    '''split-csv.py'''
 __author__  =    '''Dylan Schwilk'''
 __usage__   =    '''split-csv.py [options] csv_file'''
 
-
-#import zipfile as zf
 import codecs
-
 import logging
 logging.basicConfig(format='%(levelname)s: %(message)s')
 gbif_logger = logging.getLogger('tpl_logger')
-
 
 def writeChunk(chunk, filename, header=None):
     gbif_logger.info("writing file: %s" % filename)
@@ -26,7 +26,6 @@ def writeChunk(chunk, filename, header=None):
     for item in chunk:
         ofile.write(item)
     ofile.close()
-
 
 def main():
     '''Command line program.  '''
@@ -49,6 +48,7 @@ def main():
     if options.verbose:
         gbif_logger.setLevel(logging.INFO)
     
+    # read input file
     if len(args) == 1 :
         try :
             infile = codecs.open(args[0], "r", "utf-8")
@@ -56,18 +56,17 @@ def main():
             gbif_logger.error('Error reading file, %s' % args[0])
             sys.exit()
     else:
-        # We can't use stdin as a fallback because we are not guaranteed stdin
-        # to be utf on all platforms (python 3 fixes this)
         gbif_logger.error('No input file provided')
         sys.exit()
 
-
-    file_iter = iter(infile)
-    header = file_iter.next()
+    # get the header and advance file iterator
+    header = infile.next()
     if not options.include_header : header = None
+
+    # set up counter and cycle through the big file
     n=0
     chunk = [""]*options.nrows
-    for l in file_iter:
+    for l in infile:
         chunk[n % options.nrows] = l
         n=n+1
         if n % options.nrows == 0 :
@@ -79,7 +78,6 @@ def main():
     filename =  "%s%i.csv" % (options.output, n)
     writeChunk(chunk, filename, header, options.verbose)
 
-        
 
 if __name__== "__main__":
     main()
