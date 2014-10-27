@@ -1,4 +1,4 @@
-## Revision 2014-10-24 for new gbif data dump
+#!/usr/env python
 
 ## script to cycle through entire huge gbif plantae data dump and check each
 ## name against the fuzzy match table (expanded tank et al names to gbif names
@@ -21,7 +21,7 @@ TANKNAMES= codecs.open("../../bigphylo/species/big-phylo-leaves.txt", "r", "utf-
 goodnames = synonymize.read_names(TANKNAMES)
 goodnames = set(goodnames)
 
-# Turn a space separated header line into a dicitonary that looks up indices
+# Turn a space separated header line into a dictionary that looks up indices
 def makeHeaderDict(s):
     gbif_header = s[:-1].split("\t")
     hdict = {}
