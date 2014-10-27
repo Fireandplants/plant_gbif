@@ -3,7 +3,7 @@
 ## Dylan W. Schwilk
 
 """This script will split a large txt file into separate file chunks of n rows
-each. The -o option dtermines the directory and name prefix for each chunk. The
+each. The -o option determines the directory and name prefix for each chunk. The
 -d option controls adding the header to each chunk. See `split-csv.py -h` for
 options.
 
