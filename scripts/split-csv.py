@@ -76,7 +76,7 @@ def main():
 
     # write final chunk
     filename =  "%s%i.csv" % (options.output, n)
-    writeChunk(chunk, filename, header, options.verbose)
+    writeChunk(chunk, filename, header)
 
 
 if __name__== "__main__":
