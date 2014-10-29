@@ -10,3 +10,4 @@ data
 
 # specific ignores, intermediate files
 /theplantlist1.1/tpl_make_compact_flymake.py
+.Rproj.user
