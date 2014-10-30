@@ -8,6 +8,7 @@ decimalLongitude
 year
 elevation
 coordinateAccuracy
+georeferenceProtocol
 continent
 stateProvince
 county

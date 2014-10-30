@@ -14,7 +14,8 @@ import zipfile as zf
 import synonymize
 import codecs
 
-output_field_sep = "\t"
+#output_field_sep = "\t"
+output_field_sep = ","
 
 fuzzyMatchesFile = codecs.open("../query_names/gbif_tank_lookup_final.csv","r", "utf-8")
 fieldsFile =       codecs.open("../query_names/gbif_fields.txt", "r", "utf-8")
@@ -62,6 +63,9 @@ for l in occurrences:
     hdict = makeHeaderDict(l)
     break # just read first line
 
+# print(hdict)
+# exit(0)
+
 n = 0
 nmatches=0
 for l in occurrences:
@@ -87,9 +91,9 @@ for l in occurrences:
         if tankname :  # write data if synonym could be matched back to tankname
             # get all the needed fields
             resline = resline + tankname + output_field_sep
-            field_vals = map(lambda x : f[hdict[x]], gfields) # fine if "\t" is sep
+            #field_vals = map(lambda x : f[hdict[x]], gfields) # fine if "\t" is sep
             # required if we use "," as sep:
-            #field_vals = map(lambda x : '"%s"' % f[hdict[x]], gfields) 
+            field_vals = map(lambda x : '"%s"' % f[hdict[x]], gfields) 
             resline = resline + output_field_sep.join(field_vals)
             output_file.write(resline + "\n")
 
