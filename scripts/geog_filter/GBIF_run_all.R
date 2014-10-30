@@ -16,12 +16,15 @@
 ## and the following R packages are installed: 
 ## 'sp','raster','rgdal','foreach','snow','snowfall','doSNOW'
 
-## Part I
+dir.create('./log_files')
 dir.create('./data/gbif_chunks')
+
+## Part I
+
 system('python ./scripts/split-csv.py -v -d -n5000000 
        -o"./data/gbif_chunks/chunk-" 
        ./data/gbif-occurrences_extracted_141026.csv
-       >chunk.log 2>&1 &')
+       >./log_files/gbif_chunk.log 2>&1 &')
 
 ## Part II
 system('Rscript GBIF_make_splist.R > ./log_files/make_splist.log 2>&1',
