@@ -74,9 +74,10 @@ def main():
             writeChunk(chunk, filename, header)
             chunk = [""]*options.nrows
 
-    # write final chunk
-    filename =  "%s%i.csv" % (options.output, n)
-    writeChunk(chunk, filename, header)
+    # write final chunk if nrows is not perfect muliple of n
+    if n % options.nrows !=0 :
+        filename =  "%s%i.csv" % (options.output, n)
+        writeChunk(chunk, filename, header)
 
 
 if __name__== "__main__":
