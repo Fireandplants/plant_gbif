@@ -1,4 +1,4 @@
-#!/usr/env python
+#!/usr/bin/env python
 
 ## Dylan W. Schwilk
 
@@ -17,7 +17,7 @@ __usage__   =    '''split-csv.py [options] csv_file'''
 import codecs
 import logging
 logging.basicConfig(format='%(levelname)s: %(message)s')
-gbif_logger = logging.getLogger('tpl_logger')
+gbif_logger = logging.getLogger('split_csv_logger')
 
 def writeChunk(chunk, filename, header=None):
     gbif_logger.info("writing file: %s" % filename)
