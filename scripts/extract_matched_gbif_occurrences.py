@@ -48,7 +48,7 @@ for l in fuzzyMatchesFile:
 gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
 
-occurences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').open("occurrence.txt", "r")
+occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').open("occurrence.txt", "r")
 output_file = codecs.open('../data/gbif-occurrences_extracted_141030.csv', 'w', "utf-8")
 output_file.write("gbifname%sexpandedname%stankname%s" % 
                  (output_field_sep, output_field_sep, output_field_sep))
@@ -57,14 +57,14 @@ for h in gfields:
 output_file.write("\n")
 
 # get header
-for l in occurences:
+for l in occurrences:
     l = codecs.decode(l, "utf-8")
     hdict = makeHeaderDict(l)
     break # just read first line
 
 n = 0
 nmatches=0
-for l in occurences:
+for l in occurrences:
     l = codecs.decode(l, "utf-8")
     n = n + 1 
     
@@ -77,17 +77,20 @@ for l in occurences:
     res =  fnames.get(name)
     if res :
         nmatches = nmatches+1
-        # print("found fm: " + name + ", " + res)
         resline = name + output_field_sep + res + output_field_sep
         
-        # get all the needed fields
-        if (nmatches % 5000 == 0) : print(str(n) + "\t" + str(nmatches) +": " + resline)
+        # to update progress:
+        if (nmatches % 5000 == 0) : 
+            print(str(n) + "\t" + str(nmatches) +": " + resline)
+
         tankname = synonymize.bad2good(res)
-        resline = resline + tankname + output_field_sep
-        field_vals = map(lambda x : f[hdict[x]], gfields) # fine if "\t" is sep
-        # required if we use "," as sep:
-        #field_vals = map(lambda x : '"%s"' % f[hdict[x]], gfields) 
-        resline = resline + output_field_sep.join(field_vals)
-        output_file.write(resline + "\n")
+        if tankname :  # write data if synonym could be matched back to tankname
+            # get all the needed fields
+            resline = resline + tankname + output_field_sep
+            field_vals = map(lambda x : f[hdict[x]], gfields) # fine if "\t" is sep
+            # required if we use "," as sep:
+            #field_vals = map(lambda x : '"%s"' % f[hdict[x]], gfields) 
+            resline = resline + output_field_sep.join(field_vals)
+            output_file.write(resline + "\n")
 
     #if n > 10000 : break  # uncomment to test on first 10k records
