@@ -1,4 +1,4 @@
-#!/usr/env python
+#!/usr/bin/env python
 
 ## script to cycle through entire huge gbif plantae data dump and check each
 ## name against the fuzzy match table (expanded tank et al names to gbif names
@@ -14,6 +14,8 @@ import zipfile as zf
 import synonymize
 import codecs
 
+output_field_sep = "\t"
+
 fuzzyMatchesFile = codecs.open("../query_names/gbif_tank_lookup_final.csv","r", "utf-8")
 fieldsFile =       codecs.open("../query_names/gbif_fields.txt", "r", "utf-8")
 
@@ -23,7 +25,7 @@ goodnames = set(goodnames)
 
 # Turn a space separated header line into a dictionary that looks up indices
 def makeHeaderDict(s):
-    gbif_header = s[:-1].split("\t")
+    gbif_header = s[:-1].split("\t") # gbif data is tab-delimited
     hdict = {}
     for i,h in enumerate(gbif_header) :
         hdict[h]=i
@@ -47,13 +49,12 @@ gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
 
 occurences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').open("occurrence.txt", "r")
-output_file = codecs.open('../data/gbif-occurrences_extracted_141026.csv', 'w', "utf-8")
-output_file.write("gbifname\texpandedname\ttankname\t")
+output_file = codecs.open('../data/gbif-occurrences_extracted_141030.csv', 'w', "utf-8")
+output_file.write("gbifname%sexpandedname%stankname%s" % 
+                 (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields:
-            output_file.write(h + "\t")
+            output_file.write(h + output_field_sep)
 output_file.write("\n")
- 
-
 
 # get header
 for l in occurences:
@@ -77,16 +78,16 @@ for l in occurences:
     if res :
         nmatches = nmatches+1
         # print("found fm: " + name + ", " + res)
-        resline = name + "\t" + res + "\t"
+        resline = name + output_field_sep + res + output_field_sep
         
         # get all the needed fields
         if (nmatches % 5000 == 0) : print(str(n) + "\t" + str(nmatches) +": " + resline)
         tankname = synonymize.bad2good(res)
-        resline = resline + tankname + "\t"
-        for h in gfields:
-       #     print(h)
-       #     print(hdict[h])
-            resline = resline + f[hdict[h]] + "\t"
+        resline = resline + tankname + output_field_sep
+        field_vals = map(lambda x : f[hdict[x]], gfields) # fine if "\t" is sep
+        # required if we use "," as sep:
+        #field_vals = map(lambda x : '"%s"' % f[hdict[x]], gfields) 
+        resline = resline + output_field_sep.join(field_vals)
         output_file.write(resline + "\n")
 
-#    if n > 10000 : break
+    #if n > 10000 : break  # uncomment to test on first 10k records
