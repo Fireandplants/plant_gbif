@@ -21,14 +21,16 @@ dir.create('./data/gbif_chunks')
 
 ## Part I
 
-system('python ./scripts/split-csv.py -v -d -n5000000 
-       -o"./data/gbif_chunks/chunk-" 
-       ./data/gbif-occurrences_extracted_141026.csv
-       >./log_files/gbif_chunk.log 2>&1 &')
+nlines = '5000000'
+log_file = './log_files/chunk_gbif.log'
+input_file = './data/gbif-occurrences_extracted_141030.csv'
+cmd = paste('python ./scripts/split-csv.py -v -d -n', nlines,
+            '-o./data/gbif_chunks/chunk-', input_file, '>', log_file, '2>&1')
+system(cmd)
 
 ## Part II
-system('Rscript GBIF_make_splist.R > ./log_files/make_splist.log 2>&1',
-       wait=F)
+#system('Rscript ./scripts/geog_filter/GBIF_make_splist.R > ./log_files/make_splist.log 2>&1',
+#       wait=F)
 
 ## Part III
 system('Rscript GBIF_setup_geog_data.R > ./log_files/setup_geog_data.log 2>&1',
