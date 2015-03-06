@@ -33,11 +33,11 @@ system(cmd)
 #       wait=F)
 
 ## Part III
-system('Rscript setup_geog_data.R > ./log_files/setup_geog_data.log 2>&1',
+system('Rscript ./scripts/geog_filter/setup_geog_data.R > ./log_files/setup_geog_data.log 2>&1',
        wait=F)
 
 ## Part IV
-system('Rscript geog_filter.R > ./log_files/geog_filter.log 2>&1', wait=F)
+system('Rscript ./scripts/geog_filter/geog_filter.R > ./log_files/geog_filter.log 2>&1', wait=F)
 
 ## Part V
 system('Rscript GBIF_climate_query.R > ./log_files/climate_query.log 2>&1', wait=F)
