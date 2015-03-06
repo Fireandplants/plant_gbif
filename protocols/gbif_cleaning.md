@@ -8,7 +8,7 @@ Cleaning steps (in order)
 -------------------------
 1. Filter Location precision (lat/lon must have 2 decimal places).
 2. Filter records in the ocean. 
-3. Filter records within the 0.1 x 0.1 degree gride sell of the GBIF HQ, herbaria with >1,500,000 specimens, and all geopolitical centroids. 
+3. Filter records within the 0.01 x 0.01 degree gride sell of the GBIF HQ, herbaria with >1,500,000 specimens, and all geopolitical centroids. 
 4. Filter on landuse. Eliminate those records that fall in MODIS classes 12 and 13. URL: https://lpdaac.usgs.gov/products/modis_products_table/mcd12q1
 5. Filter on human impact (method via Sally, Beth). Cutoff at 20. URL:  http://sedac.ciesin.columbia.edu/data/set/wildareas-v2-human-footprint-geographic
 6. Preferentially use most recent records: For species with > 100 records in last 20 years use those records. For others, use all records.
