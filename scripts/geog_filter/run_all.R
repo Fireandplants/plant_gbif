@@ -1,9 +1,9 @@
-## Run all GBIF related Rscripts sequentially
+## Run all filtering scripts sequentially
 ## Author: Dan McGlinn
 ## Contact: danmcglinn@gmail.com
-## Date: 10/2014
+## Date: 04/2015
 ## Description:
-## This script calls each of the GBIF data grooming scripts sequentially
+## This script calls each of the data grooming scripts sequentially
 ## and thus can be used to generate all relevant data products. The directory
 ## this script is called from must contain the unpacked GBIF raw datafiles in a
 ## directory called 'gbif_raw_data' and the working directory must also contain
@@ -12,7 +12,7 @@
 ## they do not exist:
 ## 'gbif_data_chunks','filtered_results','genus_sort', & 'genus_results' 
 ## Lastly the relevant GIS datalayers that are called must be present in the 
-## directory '~/gis/' 
+## directory '../gis/' 
 ## and the following R packages are installed: 
 ## 'sp','raster','rgdal','foreach','snow','snowfall','doSNOW'
 
@@ -21,7 +21,7 @@ dir.create('./data/gbif_chunks')
 
 ## Part I
 
-nlines = '5000000'
+nlines = '500000'
 log_file = './log_files/chunk_gbif.log'
 input_file = './data/gbif-occurrences_extracted_141030.csv'
 cmd = paste('python ./scripts/split-csv.py -v -d -n', nlines,
@@ -33,11 +33,11 @@ system(cmd)
 #       wait=F)
 
 ## Part III
-system('Rscript GBIF_setup_geog_data.R > ./log_files/setup_geog_data.log 2>&1',
+system('Rscript setup_geog_data.R > ./log_files/setup_geog_data.log 2>&1',
        wait=F)
 
 ## Part IV
-system('Rscript GBIF_geog_filter.R > ./log_files/geog_filter.log 2>&1', wait=F)
+system('Rscript geog_filter.R > ./log_files/geog_filter.log 2>&1', wait=F)
 
 ## Part V
 system('Rscript GBIF_climate_query.R > ./log_files/climate_query.log 2>&1', wait=F)
