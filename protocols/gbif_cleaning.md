@@ -6,7 +6,7 @@ See comments in issue thread: https://github.com/Fireandplants/bigphylo/issues/1
 
 Cleaning steps (in order)
 -------------------------
-1. Filter Location precision (lat/lon decimal places).
+1. Filter Location precision (lat/lon must have 2 decimal places).
 2. Filter records in the ocean. 
 3. Filter records within the 0.1 x 0.1 degree gride sell of the GBIF HQ, herbaria with >1,500,000 specimens, and all geopolitical centroids. 
 4. Filter on landuse. Eliminate those records that fall in MODIS classes 12 and 13. URL: https://lpdaac.usgs.gov/products/modis_products_table/mcd12q1
