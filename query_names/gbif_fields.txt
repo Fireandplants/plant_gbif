@@ -13,7 +13,6 @@ continent
 stateProvince
 county
 countryCode
-locality
 genus
 specificEpithet
 species
