@@ -33,6 +33,9 @@ def makeHeaderDict(s):
     return hdict
 
 
+def cleanField(s):
+    return s.replace('"', '\\"').replace('\n',' ')
+
 ## make tpl dicts
 synonymize.make_tpl_dicts(codecs.open(synonymize.TPL_FILE, "r", "utf-8"))
 ## make canonical lookup in synonymize
@@ -53,8 +56,9 @@ occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').op
 output_file = codecs.open('../data/gbif-occurrences_extracted_150310.csv', 'w', "utf-8")
 output_file.write("gbifname%sexpandedname%stankname%s" % 
                  (output_field_sep, output_field_sep, output_field_sep))
-for h in gfields:
+for h in gfields[0:-1]:
             output_file.write(h + output_field_sep)
+output_file.write(gfields[-1])
 output_file.write("\n")
 
 # get header
@@ -81,7 +85,7 @@ for l in occurrences:
     res =  fnames.get(name)
     if res :
         nmatches = nmatches+1
-        resline = name + output_field_sep + res + output_field_sep
+        resline = '"%s"%s"%s"%s' % (name, output_field_sep,  res, output_field_sep)
         
         # to update progress:
         if (nmatches % 5000 == 0) : 
@@ -91,10 +95,11 @@ for l in occurrences:
         if tankname :  # write data if synonym could be matched back to tankname
             # get all the needed fields
             resline = resline + tankname + output_field_sep
-            #field_vals = map(lambda x : f[hdict[x]], gfields) # fine if "\t" is sep
             # required if we use "," as sep:
-            field_vals = map(lambda x : '"%s"' % f[hdict[x]], gfields) 
+            field_vals = map(lambda x : '"%s"' % cleanField(f[hdict[x]]), gfields)
             resline = resline + output_field_sep.join(field_vals)
             output_file.write(resline + "\n")
 
     #if n > 10000 : break  # uncomment to test on first 10k records
+print("Total records scanned = " + str(n))
+print("Total matches found = " + str(nmatches))
