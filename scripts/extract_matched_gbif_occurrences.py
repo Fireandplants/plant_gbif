@@ -7,7 +7,7 @@
 ## Note that rather than using the "merge" action provided by the command line
 ## synonymize.py script, this script imports synonymize and uses some functions
 ## directly. This is in the interest of speed: it takes a long time to go
-## through 132 million gbif records, let's only do it once and get the
+## through ~140 million gbif records, let's only do it once and get the
 ## canonical name while we are visiting each record.
 
 import zipfile as zf
@@ -52,8 +52,8 @@ for l in fuzzyMatchesFile:
 gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
 
-occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0000380-141021104744918.zip').open("occurrence.txt", "r")
-output_file = codecs.open('../data/gbif-occurrences_extracted_150310.csv', 'w', "utf-8")
+occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0000911-150306150734599.zip').open("occurrence.txt", "r")
+output_file = codecs.open('../data/gbif-occurrences_extracted_150311.csv', 'w', "utf-8")
 output_file.write("gbifname%sexpandedname%stankname%s" % 
                  (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields[0:-1]:

@@ -47,16 +47,19 @@ The manual step could probably be eliminated with enough special cases hard-code
 
 ### 4. Extract matching records from the GBIF Plantae data ###
 
-This step reads line by line through the 140 million GBIF occurrence records (October 2014 download) and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_tank_lookup_final.csv`. 
+This step reads line by line through the 140 million GBIF occurrence records  and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_tank_lookup_final.csv`. Note that the current version reads through a slightly more recent GBIF download (`0000911-150306150734599.zip`) downloaded on 3/11/2015. Citation: GBIF.org (11th March 2015) GBIF Occurrence Download http://doi.org/10.15468/dl.4motu9 to catch any more recent updates or edits to gbif.  But we did not rerun the fuzzy name matching which should be extremely unlikely to be useful for adding new names when so many synonyms have already been matched.
+
 
 ```
 python extract_matched_gbif_occurrences.py
 
 ```
 
-The result is saved as a large tab-separated file, current version is `gbif-occurrences_extracted_150310.csv`.  This is our full species occurrence data with 77344114 lines (presumable 77344113 occurrences).
+This extraction step scanned 137,460,919 records and found 82,135,388 records matching our names. The result is saved as a large comma-separated file, current version is `gbif-occurrences_extracted_150311.csv`.  This is our full species occurrence data.
 
-This file should go to Dan McGlinn for further cleaning.
+### 5. Data cleaning
+
+This file goes to Dan McGlinn for further cleaning.
 
 [bigphylo]: https://github.com/Fireandplants/bigphylo
 [ejforrestel]: https://github.com/ejforrestel
