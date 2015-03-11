@@ -101,5 +101,8 @@ for l in occurrences:
             output_file.write(resline + "\n")
 
     #if n > 10000 : break  # uncomment to test on first 10k records
+
+output_file.flush()
+output_file.close()
 print("Total records scanned = " + str(n))
 print("Total matches found = " + str(nmatches))
