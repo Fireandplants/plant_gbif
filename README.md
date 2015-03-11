@@ -55,7 +55,7 @@ python extract_matched_gbif_occurrences.py
 
 ```
 
-This extraction step scanned 137,460,919 records and found 82,135,388 records matching our names. The result is saved as a large comma-separated file, current version is `gbif-occurrences_extracted_150311.csv`.  This is our full species occurrence data.
+This extraction step scanned 137,460,919 records and found 82,135,388 records matching our names.  But htere are snonym matches that cannot be reverse-matched back to canonical name (see history of synonymize.py). The final occurrences list is 78,669,155 records. The result is saved as a large comma-separated file, current version is `gbif-occurrences_extracted_150311.csv`.  This is our full species occurrence data.
 
 ### 5. Data cleaning
 
