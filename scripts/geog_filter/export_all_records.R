@@ -38,7 +38,9 @@ for (i in seq_along(genusList)) {
     else {
         write.table(dat, file=file.path(outputDir,'gbif_all_remote_data.csv'), 
                     sep=',', row.names=F, append=TRUE, col.names=FALSE)
-        write.table(dat[ , subfields], file=file.path(outputDir, 'gbif_coords_alt.csv'),
+        write.table(dat[ , subfields], file=file.path(outputDir, 'gbif_coords.csv'),
                     sep=',', row.names=F, append=TRUE, col.names=FALSE)                
     }
+    rm(dat)
+    print(paste('Genus', genusList[i], 'appended'))
 }
