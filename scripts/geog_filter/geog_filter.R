@@ -23,6 +23,10 @@ fileNames = dir(inputDir)
 outputDir = './data/filtered_results'
 dir.create(outputDir)
 
+#out = dir(outputDir)
+#files = sub('filter-', '', out)
+#fileNames = fileNames[!(sub('chunk-', '', fileNames) %in% files)]
+
 load('./data/gbif_geog.Rdata')
 
 sfInit(parallel=TRUE, cpus=8, type="SOCK")
@@ -30,11 +34,7 @@ sfLibrary(raster)
 registerDoSNOW(sfGetCluster())
 
 foreach(i = 1:length(fileNames), .inorder = FALSE) %dopar% {
-    dat = read.table(file.path(inputDir, fileNames[i]), colClasses='character',
-                     sep=',', skip=1, na.strings="")
-    dat_hdr = read.table('./data/gbif-occurrences_extracted_hdr_141030.csv',
-                         colClasses='character', sep=',')
-    names(dat) = as.character(dat_hdr)
+    dat = read.csv(file.path(inputDir, fileNames[i]), colClasses='character')
     ## drop duplicates as defined by 
     ## rows that have the same species name and coordinates 
     ## this filter will be carried once again when aggregating to the species
@@ -93,5 +93,3 @@ foreach(i = 1:length(fileNames), .inorder = FALSE) %dopar% {
 }
 
 sfStop()
-
-rm(list=ls(all=TRUE))
