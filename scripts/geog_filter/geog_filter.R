@@ -5,10 +5,14 @@
 ## Description:
 ## This script takes a quick cut of the best data. 
 ## Filters:
-## - duplicated records
+## - no duplicated records
+## - no non-numeric coordinates 
+## - no coordinates without reasonable range 
+## - no coordinates equal to exactly 0
+## - not located within 0.01 decimal degree of Cophenhagen, Denmark
+## - latitude not equal longitude 
 ## - low resolution coordinates dropped
-## - bad coordinates
-## - not a centroid
+## - not located within 0.01 decimal degree of a country's centroid
 ## - lat/long of the record must match the country or continent that was recorded
 ##   for the record.
 
