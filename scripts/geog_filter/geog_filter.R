@@ -33,7 +33,7 @@ dir.create(outputDir)
 
 load('./data/gbif_geog.Rdata')
 
-sfInit(parallel=TRUE, cpus=8, type="SOCK")
+sfInit(parallel=TRUE, cpus=24, type="SOCK")
 sfLibrary(raster)
 registerDoSNOW(sfGetCluster())
 
