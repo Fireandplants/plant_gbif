@@ -24,12 +24,15 @@ bioStack = stack('./data/bioclim_alt_5m.grd')
 ## ndvi raster data
 ndvi = stack('./data/ndvi.grd')
 
+## soil data
+p_grid = stack('./data/p_grid.grd')
+
 ## load wwf ecoregions
 load('./data/wwfeco.Rdata')
 
 fileNames = dir(inputDir)[grep('filter-', dir(inputDir))]
 
-sfInit(parallel=TRUE, cpus=8, type="SOCK")
+sfInit(parallel=TRUE, cpus=24, type="SOCK")
 sfLibrary(raster)
 registerDoSNOW(sfGetCluster())
 
@@ -47,16 +50,19 @@ foreach(i = 1:length(fileNames), .inorder = FALSE) %dopar% {
         coords = cbind(datTemp$decimalLongitude, datTemp$decimalLatitude)
         clim = extract(bioStack, coords)
         prod = extract(ndvi, coords)
+        P = extract(p_grid, coords)
         if (nrow(datTemp) == 1) {
-            datTemp = data.frame(c(datTemp, clim, prod))
+            datTemp = data.frame(c(datTemp, clim, prod, P))
         }            
         else {
-            datTemp = data.frame(datTemp, clim, prod)
+            datTemp = data.frame(datTemp, clim, prod, P)
         }
         eco_code = over(SpatialPoints(coords, CRS(proj4string(wwfeco))),
                         wwfeco)$eco_code
         datTemp = data.frame(datTemp, eco_code)
-        names(datTemp) = c(colNames, names(bioStack), 'ndviAvg', 'eco_code')
+        names(datTemp) = c(colNames, names(bioStack), 'ndviAvg',
+                           'Total.P', 'Labile.Inorganic.P', 'organic.P',
+                           'eco_code')
         out_file = paste(outputDir, genusList[j], 
                          strsplit(fileNames[i], 'filter')[[1]][2], sep='')
         write.csv(datTemp, file=out_file, row.names=FALSE)
