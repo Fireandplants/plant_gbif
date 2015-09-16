@@ -14,6 +14,8 @@ library(foreach)
 library(doSNOW) 
 library(snowfall)
 
+source('./scripts/geog_filter/wise_soil_import.R')
+
 inputDir = './data/filtered_results/'
 outputDir = './data/genus_sort/'
 dir.create(outputDir)
@@ -47,22 +49,23 @@ foreach(i = 1:length(fileNames), .inorder = FALSE) %dopar% {
     for (j in seq_along(genusList)) { 
         datTemp = dat[genus == genusList[j], ]
         colNames = names(datTemp)
-        coords = cbind(datTemp$decimalLongitude, datTemp$decimalLatitude)
+        coords = data.frame(Long=datTemp$decimalLongitude, Lat=datTemp$decimalLatitude)
         clim = extract(bioStack, coords)
         prod = extract(ndvi, coords)
-        P = extract(p_grid, coords)
+        P = extract(p_grid, coords)[ , c('Total.P', 'Labile.Inorganic.P', 'organic.P')]
+        soil = add.soil.data(coords)[ , c('TOTN', 'TAWC')]
         if (nrow(datTemp) == 1) {
-            datTemp = data.frame(c(datTemp, clim, prod, P))
+            datTemp = data.frame(c(datTemp, clim, prod, P, soil))
         }            
         else {
-            datTemp = data.frame(datTemp, clim, prod, P)
+            datTemp = data.frame(datTemp, clim, prod, P, soil)
         }
         eco_code = over(SpatialPoints(coords, CRS(proj4string(wwfeco))),
                         wwfeco)$eco_code
         datTemp = data.frame(datTemp, eco_code)
         names(datTemp) = c(colNames, names(bioStack), 'ndviAvg',
                            'Total.P', 'Labile.Inorganic.P', 'organic.P',
-                           'eco_code')
+                           'TOTN', 'TAWC', 'eco_code')
         out_file = paste(outputDir, genusList[j], 
                          strsplit(fileNames[i], 'filter')[[1]][2], sep='')
         write.csv(datTemp, file=out_file, row.names=FALSE)
