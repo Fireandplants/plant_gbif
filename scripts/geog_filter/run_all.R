@@ -52,3 +52,9 @@ log_file = './log_files/export_all_records.log'
 cmd = paste('Rscript', script_file, '>', log_file, '2>&1')
 system(cmd, wait=F)
 
+## Part VI - Summarize records, output quantiles
+script_file = './scripts/geog_filter/climate_summary.R'
+log_file = './log_files/climate_summary.log'
+
+cmd = paste('Rscript', script_file, '>', log_file, '2>&1')
+system(cmd, wait=F)
