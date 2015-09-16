@@ -36,6 +36,8 @@ fileNames = dir(inputDir)[grep('filter-', dir(inputDir))]
 
 sfInit(parallel=TRUE, cpus=24, type="SOCK")
 sfLibrary(raster)
+sfLibrary(foreign)
+sfLibrary(nlme)
 registerDoSNOW(sfGetCluster())
 
 ## create a seperate file for each genus
