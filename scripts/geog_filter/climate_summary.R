@@ -18,7 +18,7 @@ inputDir = './data'
 outputDir = './data'
 
 
-dat = read_csv('./data/gbif_all_remote_data.csv', n_max=1e4)
+dat = read_csv('./data/gbif_all_remote_data.csv')
 
 # cover negative values from the wise soil data to NAs
 dat$TOTN = ifelse(dat$TOTN < 0, NA, dat$TOTN)
