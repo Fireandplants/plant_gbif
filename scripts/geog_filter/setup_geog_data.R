@@ -105,3 +105,7 @@ writeRaster(ndvi, file='./data/ndvi.grd', format='raster', overwrite=TRUE)
 #http://stuff.mit.edu/afs/athena/course/11/11.951/ecoplan/data/ecoregions/wwf_terr_ecos.htm
 wwfeco = read.shape('wwf_terr_ecos', '../gis/wwf/official/')
 save(wwfeco, file='./data/wwfeco.Rdata')
+
+## soil data
+p_grid = stack('../gis/global_gridded_soil/p_grid.grd')
+writeRaster(p_grid, file='./data/p_grid.grd', format='raster', overwrite=TRUE)
