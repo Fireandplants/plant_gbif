@@ -17,11 +17,11 @@ import codecs
 #output_field_sep = "\t"
 output_field_sep = ","
 
-fuzzyMatchesFile = codecs.open("../query_names/gbif_tank_lookup_final.csv","r", "utf-8")
+fuzzyMatchesFile = codecs.open("../query_names/gbif_myco_lookup_151016_final.csv","r", "utf-8")
 fieldsFile =       codecs.open("../query_names/gbif_fields.txt", "r", "utf-8")
 
-TANKNAMES= codecs.open("../../bigphylo/species/big-phylo-leaves.txt", "r", "utf-8")
-goodnames = synonymize.read_names(TANKNAMES)
+CANONICAL_NAMES= codecs.open("../query_names/myco_species.txt", "r", "utf-8")
+goodnames = synonymize.read_names(CANONICAL_NAMES)
 goodnames = set(goodnames)
 
 # Turn a space separated header line into a dictionary that looks up indices
@@ -51,9 +51,9 @@ for l in fuzzyMatchesFile:
 ## get the list of fields we want
 gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
-
-occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0000911-150306150734599.zip').open("occurrence.txt", "r")
-output_file = codecs.open('../data/gbif-occurrences_extracted_150311.csv', 'w', "utf-8")
+#print(gfields)
+occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0006467-150922153815467.zip').open("0006467-150922153815467.csv", "r")
+output_file = codecs.open('../data/myco-gbif-occurrences_extracted_151022.csv', 'w', "utf-8")
 output_file.write("gbifname%sexpandedname%stankname%s" % 
                  (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields[0:-1]:
@@ -67,8 +67,8 @@ for l in occurrences:
     hdict = makeHeaderDict(l)
     break # just read first line
 
-# print(hdict)
-# exit(0)
+#print(hdict)
+#exit(0)
 
 n = 0
 nmatches=0
