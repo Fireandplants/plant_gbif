@@ -1,7 +1,6 @@
 #!/usr/bin/env python 
 
-# Authors: Dylan W. Schwilk and Will Pearse
-
+# Dylan W. Schwilk
 # Utilities for fuzzy matching taxon names
 
 from Levenshtein import jaro_winkler as jaro_winkler
