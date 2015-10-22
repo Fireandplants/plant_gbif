@@ -78,7 +78,7 @@ for l in occurrences:
     
     f = l[:-1].split("\t")
     # first check if lat and lon exist 
-    if not f[hdict["decimalLatitude"]] or not f[hdict["decimalLongitude"]]:
+    if not f[hdict["decimallatitude"]] or not f[hdict["decimallongitude"]]:
         continue
 
     name = f[hdict["species"]] 
