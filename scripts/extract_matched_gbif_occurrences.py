@@ -54,7 +54,7 @@ gfields = map(lambda x: x.strip(), gfields)
 #print(gfields)
 occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0006467-150922153815467.zip').open("0006467-150922153815467.csv", "r")
 output_file = codecs.open('../data/myco-gbif-occurrences_extracted_151022.csv', 'w', "utf-8")
-output_file.write("gbifname%sexpandedname%stankname%s" % 
+output_file.write("gbifname%sexpandedname%canonical_name%s" % 
                  (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields[0:-1]:
             output_file.write(h + output_field_sep)
