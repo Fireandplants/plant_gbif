@@ -19,81 +19,82 @@
 library(foreach)
 library(doSNOW) ##needed to initialize the cluster with foreach
 library(snowfall) ##needed to create cluster
+library(readr)
 
 source('./scripts/geog_filter/GBIF_functions.R')
 
-inputDir = './data/gbif_chunks'
-fileNames = dir(inputDir)
-outputDir = './data/filtered_results'
-dir.create(outputDir)
+input_dir = './data/gbif_chunks'
+file_names = dir(input_dir)
+output_dir = './data/filtered_results'
+dir.create(output_dir)
 
-#out = dir(outputDir)
+#out = dir(output_dir)
 #files = sub('filter-', '', out)
-#fileNames = fileNames[!(sub('chunk-', '', fileNames) %in% files)]
+#file_names = file_names[!(sub('chunk-', '', file_names) %in% files)]
 
 load('./data/gbif_geog.Rdata')
 
 sfInit(parallel=TRUE, cpus=24, type="SOCK")
 sfLibrary(raster)
+sfLibrary(readr)
 registerDoSNOW(sfGetCluster())
 
-foreach(i = 1:length(fileNames), .inorder = FALSE) %dopar% {
-    dat = read.csv(file.path(inputDir, fileNames[i]), colClasses='character')
+foreach(i = 1:length(file_names), .inorder = FALSE) %dopar% {
+    dat = read_csv(file.path(input_dir, file_names[i]))
     ## drop duplicates as defined by 
     ## rows that have the same species name and coordinates 
     ## this filter will be carried once again when aggregating to the species
-    filtering_columns = c('tankname', 'decimalLatitude', 'decimalLongitude')
+    filtering_columns = c('tankname', 'decimallatitude', 'decimallongitude')
     dat = subset(dat, !duplicated(dat[ , filtering_columns]))
     ## drop rows that are duplicates according to the 'occurance id field'
-    dat = subset(dat, !duplicated(dat$gbifID))
+    dat = subset(dat, !duplicated(dat$gbifid))
     ## Begin checking for coordinate issues
     ## drop rows in which coords are non-numberic with reasonable ranges 
-    dat = subset(dat, is.coord(dat$decimalLongitude, dat$decimalLatitude))
+    dat = subset(dat, is.coord(dat$decimallongitude, dat$decimallatitude))
     ## check that not within 50 km of Cophenhagen, Denmark where GBIF is
-    true = notGBIFhq(dat$decimalLongitude, dat$decimalLatitude, cutoff=0.01)
+    true = notGBIFhq(dat$decimallongitude, dat$decimallatitude, cutoff=0.01)
     dat = subset(dat, true)
     ## check that lat not equal lon
-    dat = subset(dat, dat$decimalLatitude != dat$decimalLongitude)
+    dat = subset(dat, dat$decimallatitude != dat$decimallongitude)
     ## drop low resolutions coordinates
-    true = highres_coords(dat$decimalLongitude, dat$decimalLatitude, min_digits = 2)
+    true = highres_coords(dat$decimallongitude, dat$decimallatitude, min_digits = 2)
     dat = subset(dat, true)
     ## drop coordinates within 0.01 degrees of country centroids
     ## this is slow but works for a modest number of centroids
     ## if more centroids are considered a gridding system will need to be used
     centroids = coordinates(countryDat)
-    pts = SpatialPoints(cbind(as.numeric(dat$decimalLongitude),
-                              as.numeric(dat$decimalLatitude)),
+    pts = SpatialPoints(cbind(as.numeric(dat$decimallongitude),
+                              as.numeric(dat$decimallatitude)),
                         proj4string=CRS(proj4string(countryDat)))
     true = apply(coordinates(pts), 1, function(x) notCentroid(centroids, x))
     dat = subset(dat, true)
     ## check that Country_interpreted field matches coordinate at country and
     ## continent scales
     ## change the Namibia - NA country code to NAm
-    dat$countryCode = sub('NA', 'NAm', dat$countryCode)
-    indices = match(dat$countryCode, countryDat$code)
+    dat$countrycode = sub('NA', 'NAm', dat$countrycode)
+    indices = match(dat$countrycode, countryDat$code)
     continent = as.character(countryDat$continent[indices])
-    true = !is.na(dat$countryCode) & !is.na(continent)
+    true = !is.na(dat$countrycode) & !is.na(continent)
     ## now we ask if the recorded country and continent match what the lat/lon
     ## indicate (i.e., the pts object)
-    gbifGeog = over(pts, countryDat) 
-    goodCountry = as.character(gbifGeog$code) == dat$countryCode
-    goodContinent = as.character(gbifGeog$continent) == continent
+    gbif_geog = over(pts, countryDat) 
+    gd_country = as.character(gbif_geog$code) == dat$countrycode
+    gd_continent = as.character(gbif_geog$continent) == continent
     ## define a code to describe degree of confidence in coordinate smaller is better  
-    geoCode = rep(NA, nrow(dat)) 
+    geocode = rep(NA, nrow(dat)) 
     ## if country matches this is the highest level of validation
-    geoCode = ifelse(goodCountry, 0, geoCode)
+    geocode = ifelse(gd_country, 0, geocode)
     ## if continent matches this is next best level
-    geoCode = ifelse(!goodCountry & goodContinent, 1, geoCode)
+    geocode = ifelse(!gd_country & gd_continent, 1, geocode)
     ## begin process of outputing data
-    dat = data.frame(dat, geoCode, continent)
-    fields = c('gbifname', 'expandedname', 'tankname', 'basisOfRecord',
-               'decimalLatitude', 'decimalLongitude', 'year', 'countryCode', 
-               'geoCode', 'continent.1')
-    dat = subset(dat, !is.na(geoCode), fields)
-    filename = sub('chunk-', 'filter-', fileNames[i])
-    names(dat) = c(names(dat)[-ncol(dat)], 'continent')
-    write.csv(dat, file=file.path(outputDir, filename), row.names = FALSE)
-    print(paste('file', i, 'of', length(fileNames)))
+    dat = data.frame(dat, geocode, continent)
+    fields = c('gbifname', 'expandedname', 'tankname', 'basisofrecord',
+               'decimallatitude', 'decimallongitude', 'year', 'countrycode', 
+               'geocode', 'continent')
+    dat = subset(dat, !is.na(geocode), fields)
+    filename = sub('chunk-', 'filter-', file_names[i])
+    write_csv(dat, path=file.path(output_dir, filename))
+    print(paste('file', i, 'of', length(file_names)))
 }
 
 sfStop()

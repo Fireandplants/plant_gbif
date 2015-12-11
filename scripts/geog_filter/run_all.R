@@ -18,7 +18,7 @@ script_file = './scripts/split-csv.py'
 options = '-v -d'
 nlines = '-n 1000000'
 log_file = './log_files/chunk_gbif.log'
-input_file = './data/gbif-occurrences_extracted_150311.csv'
+input_file = './data/myco-gbif-occurrences_extracted_151022.csv'
 
 cmd = paste('python', script_file, options, nlines,
             '-o./data/gbif_chunks/chunk-', input_file, '>', log_file, '2>&1')

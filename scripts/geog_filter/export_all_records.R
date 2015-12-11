@@ -7,40 +7,40 @@
 ## 1) 'gbif_all_remote_data.csv' which has information on all the relevant variables
 ## 2) 'gbif_coords.csv' which only has the fields: spname, long, lat, and alt
 
-inputDir = './data/genus_sort/'
-outputDir = './data/'
-fileNames = dir(inputDir)
-genusFiles = sapply(strsplit(fileNames,'-[[:digit:]]'), function(x) unlist(x)[[1]])
-genusList = sort(unique(genusFiles))
+input_dir = './data/genus_sort/'
+output_dir = './data/'
+file_names = dir(input_dir)
+genus_files = sapply(strsplit(file_names,'-[[:digit:]]'), function(x) unlist(x)[[1]])
+genus_list = sort(unique(genus_files))
 
-for (i in seq_along(genusList)) {
-    for (j in which(genusFiles %in% genusList[i])) {
-        datTemp = read.csv(file.path(inputDir, fileNames[j]))
+for (i in seq_along(genus_list)) {
+    for (j in which(genus_files %in% genus_list[i])) {
+        dat_temp = read.csv(file.path(input_dir, file_names[j]))
         if(!exists('dat'))
-            dat = datTemp
+            dat = dat_temp
         else
-            dat = rbind(dat, datTemp)
+            dat = rbind(dat, dat_temp)
     }
-    rm(datTemp)
+    rm(dat_temp)
     ## drop duplicates
-    filtering_columns = c('tankname', 'decimalLatitude', 'decimalLongitude')
+    filtering_columns = c('tankname', 'decimallatitude', 'decimallongitude')
     dat = subset(dat, !duplicated(dat[ , filtering_columns]))
     ## order the rows alphabetically by species name
     dat = dat[order(as.character(dat$tankname)), ]
     ## now begin exporting process
-    subfields = c("tankname", "decimalLongitude", "decimalLatitude")
+    subfields = c("tankname", "decimallongitude", "decimallatitude")
     if (i == 1) {
-        write.table(dat, file=file.path(outputDir, 'gbif_all_remote_data.csv'),
+        write.table(dat, file=file.path(output_dir, 'gbif_all_remote_data.csv'),
                     sep=',', row.names=F)
-        write.table(dat[ , subfields], file=file.path(outputDir, 'gbif_coords.csv'),
+        write.table(dat[ , subfields], file=file.path(output_dir, 'gbif_coords.csv'),
                     sep=',', row.names=F)
     }
     else {
-        write.table(dat, file=file.path(outputDir,'gbif_all_remote_data.csv'), 
+        write.table(dat, file=file.path(output_dir,'gbif_all_remote_data.csv'), 
                     sep=',', row.names=F, append=TRUE, col.names=FALSE)
-        write.table(dat[ , subfields], file=file.path(outputDir, 'gbif_coords.csv'),
+        write.table(dat[ , subfields], file=file.path(output_dir, 'gbif_coords.csv'),
                     sep=',', row.names=F, append=TRUE, col.names=FALSE)                
     }
     rm(dat)
-    print(paste('Genus', genusList[i], 'appended'))
+    print(paste('Genus', genus_list[i], 'appended'))
 }
