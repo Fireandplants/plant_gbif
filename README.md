@@ -1,14 +1,14 @@
-myco-soil-climate
+plants-gbif
 =================
 
-This repository is for data and scripts for the "mycorrhizal soil/climate" analyses.
+This repository contains scripts for matching a canonical set of names to the binomials in the [Global Biodiversity Information Facility (GBIF) dataset][GBIF].
 
 Note: one thing I (Schwilk) have not cleaned up is that all of Schwilk's scripts (python or R) assume that the "scripts" directory is the working directory. McGlinn's scripts assume that "." is the working directory.
 
 Matching GBIF occurrence records
 --------------------------------
 
-matching the taxon names with plant occurrence records in the [Global Biodiversity Information Facility (GBIF) dataset][GBIF]. 
+Match the taxon names with plant occurrence records in the [Global Biodiversity Information Facility (GBIF) dataset][GBIF]. 
 
 These scripts read text files as utf-8 and immediately treat as unicode internally. All matching and comparisons work on unicode internally. All written output is encoded as utf-8. This has a slight speed penalty but is worth it and necessary as there are unicode characters in the GBIF data and some in other taxon name sources.
 
@@ -21,14 +21,14 @@ Much code for steps 1-2 are in the [taxon-name-utils repository](https://github.
 Our canonical names: `../query_names/myco_species.txt`.  We would like to search for occurrences of these species accounting for synonyms, so we use synonymize.py to expand the names list to all canonical names plus all synonyms. We use [The Plant List][TPL] data (see https://github.com/schwilklab/taxon-name-utils).
 
 ```
-expand_myco_names.sh
+expand_canonical_names.sh
 ```
 
-This will create a names list, `../query_names/myco-species-expanded.txt`. This expanded names list includes each name in the original list and all synonyms.
+This will create a names list, `../query_names/species-expanded.txt`. This expanded names list includes each name in the original list and all synonyms.
 
 #### 2. Extract all possible name binomials in the full GBIF occurrence data ####
 
-First, we must extract all possible taxon binomials from the full GBIF Plantae data. Schwilk downloaded the the full GBIF Plantae data on Oct 13 2015 (http://doi.org/10.15468/dl.zcygfc). This is approximately 170  million occurrence records. This data, stored as a compressed zip file is not in the git repository, but is referred to by the `extract_gbif_names.py` script. To rerun these analysis, the user must supply this file and modify the file location in the `extract_gbif_names.py` script. Other large data such as these are stored in the `/data/` directory of the repo which is ignored by git (see `.gitignore`).
+First, we must extract all possible taxon binomials from the full GBIF Plantae data. The datae of downlaod varies by project. Most recently, Schwilk downloaded the the full GBIF Plantae data on Oct 13 2015 (http://doi.org/10.15468/dl.zcygfc). This is approximately 170  million occurrence records. This data, stored as a compressed zip file is not in the git repository, but is referred to by the `extract_gbif_names.py` script. To rerun these analysis, the user must supply this file and modify the file location in the `extract_gbif_names.py` script. Other large data such as these are stored in the `/data/` directory of the repo which is ignored by git (see `.gitignore`).
 
 ```
 python extract_gbif_names.py
@@ -43,30 +43,29 @@ This step creates a lookup table that associates every possible taxon binomial i
 We can create a lookup table that maps each name in this list to the expanded canonical names list, omitting any name that does not have a sufficiently close match according to the settings in `fuzzy_match.py`. A short python script accomplishes this:
 
 ```
-python make_myco_gbif_fuzzy_lookup.py
+python make_canonical_gbif_fuzzy_lookup.py
 ```
 
-The resulting table is `../query_names/gbif_myco_lookup_151015.csv`. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2myconames.R`. The lookup table saved by that R script is `gbif_myco_lookup_151016_cleaned.csv`.  After manually marking additional removals (false matches), the resulting file was saved as `gbif_myco_lookup_151016_manual.csv`. The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as  `gbif_myco_lookup_final.csv`.
+The resulting table is savd in the query_names directory. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2canonical.R`. See Readmes in each proejct branch for details on data cleaning.
 
 The manual step could probably be eliminated with enough special cases hard-coded in the matching script. See the comments near the bottom of that R script for the rules used in manual marking for removal.
 
 #### 4. Extract matching records from the GBIF Plantae data ####
 
-This step reads line by line through all GBIF occurrence records  and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_myco_lookup_final.csv`.
+This step reads line by line through all GBIF occurrence records  and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_[project]_lookup_final.csv`.
 
 ```
 python extract_matched_gbif_occurrences.py
 
 ```
 
-The result is saved as a large comma-separated file, current version is `myco-gbif-occurrences_extracted_151022.csv`. This is our full species occurrence data, but it may have records with untrustworthy coordinates and therefore needs cleaning/culling.
+The result is saved as a large comma-separated file in the data directory, This is our full species occurrence data, but it may have records with untrustworthy coordinates and therefore needs cleaning/culling.
 
 #### 5. Data cleaning ####
 
 This file goes to Dan McGlinn for further cleaning.
 
 [TODO] add cleaning steps.
-
 
 [GBIF]: http://www.gbif.org/
 [TPL]: http://www.theplantlist.org/
