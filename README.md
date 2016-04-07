@@ -1,7 +1,7 @@
-plants-gbif
-=================
+plants-gbif: fire regime evolution project
+==========================================
 
-This repository contains scripts for matching a canonical set of names to the binomials in the [Global Biodiversity Information Facility (GBIF) dataset][GBIF].
+This repository is for data and scripts for matching the taxon names in the [D.C. Tank phylogeny][TankTree] (see [Zanne et al 2013][Zanne-etal-2013]) with plant occurrence records in the [Global Biodiversity Information Facility (GBIF) dataset][GBIF]. This is a step in the [bigphylo][bigphylo] project that is part of the Archibald and Lehman ["The co-evolution of plants and fire and consequences for the Earth system" NESCent workshop][FireAndPlants].
 
 Note: one thing I (Schwilk) have not cleaned up is that all of Schwilk's scripts (python or R) assume that the "scripts" directory is the working directory. McGlinn's scripts assume that "." is the working directory.
 
@@ -24,17 +24,17 @@ Our canonical names: `../query_names/myco_species.txt`.  We would like to search
 expand_canonical_names.sh
 ```
 
-This will create a names list, `../query_names/species-expanded.txt`. This expanded names list includes each name in the original list and all synonyms.
+This will create a names list, `../query_names/tanknames-expanded.txt`. This expanded names list includes each name in the original list and all synonyms.
 
 #### 2. Extract all possible name binomials in the full GBIF occurrence data ####
 
-First, we must extract all possible taxon binomials from the full GBIF Plantae data. The datae of downlaod varies by project. Most recently, Schwilk downloaded the the full GBIF Plantae data on Oct 13 2015 (http://doi.org/10.15468/dl.zcygfc). This is approximately 170  million occurrence records. This data, stored as a compressed zip file is not in the git repository, but is referred to by the `extract_gbif_names.py` script. To rerun these analysis, the user must supply this file and modify the file location in the `extract_gbif_names.py` script. Other large data such as these are stored in the `/data/` directory of the repo which is ignored by git (see `.gitignore`).
+First, we must extract all possible taxon binomials from the full GBIF Plantae data. Schwilk downloaded the the full GBIF Plantae data on 2014-10-22 (`0000380-141021104744918.zip`). This is approximately 140 million occurrence records. This data, stored as a compressed zip file is not in the git repository, but is referred to by the `extract_gbif_names.py` script. Other large data such as these are stored in the `/data/` directory of the repo which is ignored by git (see `.gitignore`).
 
 ```
 python extract_gbif_names.py
 ```
 
-This will create the names list. The current version is `../query_names/gbif-occurrences-names_151014.csv`. This is all unique binomial names in the GBIF Plantae occurrences data.
+This will create the names list. The current version is `../query_names/gbif-occurrences-names_141023.csv`. This is all unique binomial names in the GBIF Plantae occurrences data (48,585).
 
 #### 3. Conduct fuzzy name matching ####
 
@@ -46,20 +46,20 @@ We can create a lookup table that maps each name in this list to the expanded ca
 python make_canonical_gbif_fuzzy_lookup.py
 ```
 
-The resulting table is savd in the query_names directory. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2canonical.R`. See Readmes in each proejct branch for details on data cleaning.
+The resulting table is `../query_names/gbif_tank_lookup_141024.csv`. Raw, this results in 67051 matched names from the expanded canonical list, leaving 381534 unmatched GBIF names. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2canonical.R`. The lookup table saved by that R script is `gbif_tank_lookup_141024_cleaned.csv`.  After manually marking additional removals (false matches), the resulting file was saved as `gbif_tank_lookup_141024_cleaned_manual.csv`. The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as `gbif-tank_lookup_final.csv`. This holds 65,365 matches of which 3,163 are fuzzy matches.
 
 The manual step could probably be eliminated with enough special cases hard-coded in the matching script. See the comments near the bottom of that R script for the rules used in manual marking for removal.
 
 #### 4. Extract matching records from the GBIF Plantae data ####
 
-This step reads line by line through all GBIF occurrence records  and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_[project]_lookup_final.csv`.
+This step reads line by line through the 140 million GBIF occurrence records  and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_tank_lookup_final.csv`. Note that the current version reads through a slightly more recent GBIF download (`0000911-150306150734599.zip`) downloaded on 3/11/2015. Citation: GBIF.org (11th March 2015) GBIF Occurrence Download http://doi.org/10.15468/dl.4motu9 to catch any more recent updates or edits to gbif.  But we did not rerun the fuzzy name matching which should be extremely unlikely to be useful for adding new names when so many synonyms have already been matched.
 
 ```
 python extract_matched_gbif_occurrences.py
 
 ```
 
-The result is saved as a large comma-separated file in the data directory, This is our full species occurrence data, but it may have records with untrustworthy coordinates and therefore needs cleaning/culling.
+This extraction step scanned 137,460,919 records and found 82,135,388 records matching our names.  But there are snonym matches that cannot be reverse-matched back to canonical name (see history of synonymize.py). The final occurrences list is 78,669,155 records. The result is saved as a large comma-separated file, current version is `gbif-occurrences_extracted_150311.csv`.  This is our full species occurrence data.
 
 #### 5. Data cleaning ####
 
@@ -67,7 +67,12 @@ This file goes to Dan McGlinn for further cleaning.
 
 [TODO] add cleaning steps.
 
+[bigphylo]: https://github.com/Fireandplants/bigphylo
+[FireAndLants]: http://www.nescent.org/science/awards_summary.php?id=423
 [GBIF]: http://www.gbif.org/
 [TPL]: http://www.theplantlist.org/
+[TankTree]: http://datadryad.org/resource/doi:10.5061/dryad.63q27/3
+[Zanne-etal-2013]: http://www.nature.com/nature/journal/v506/n7486/full/nature12872.html
+
 
 
