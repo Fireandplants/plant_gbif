@@ -1,7 +1,7 @@
  #!/usr/bin/env bash
 
-CANONICAL_NAMES="../query_names/myco_species.txt"
-EXPANDED_NAMES="../query_names/myco_species_expanded.txt"
+CANONICAL_NAMES="../../bigphylo/species/big-phylo-leaves.txt"
+EXPANDED_NAMES="../query_names/tanknames-expanded.txt"
 SYNONYMIZE="../../taxon-name-utils/scripts/synonymize.py"
 
 # -b option forces binomial names

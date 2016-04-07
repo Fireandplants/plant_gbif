@@ -20,10 +20,10 @@ import synonymize
 
 output_field_sep = ","
 
-fuzzyMatchesFile = codecs.open("../query_names/gbif_myco_lookup_151016_final.csv","r", "utf-8")
+fuzzyMatchesFile = codecs.open("../query_names/gbif_tank_lookup_final.csv","r", "utf-8")
 fieldsFile =       codecs.open("../query_names/gbif_fields.txt", "r", "utf-8")
 
-CANONICAL_NAMES= codecs.open("../query_names/myco_species.txt", "r", "utf-8")
+CANONICAL_NAMES= codecs.open("../../bigphylo/species/big-phylo-leaves.txt", "r", "utf-8")
 goodnames = synonymize.read_names(CANONICAL_NAMES)
 goodnames = set(goodnames)
 
@@ -54,8 +54,8 @@ for l in fuzzyMatchesFile:
 gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
 # print(gfields)
-occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0006467-150922153815467.zip').open("0006467-150922153815467.csv", "r")
-output_file = codecs.open('../data/myco-gbif-occurrences_extracted_151022.csv', 'w', "utf-8")
+occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0000911-150306150734599.zip').open("occurrence.txt", "r")
+output_file = codecs.open('../data/gbif-occurrences_extracted_150311.csv', 'w', "utf-8")
 output_file.write("gbifname%sexpandedname%canonical_name%s" %
                   (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields[0:-1]:
@@ -80,7 +80,7 @@ for l in occurrences:
 
     f = l[:-1].split("\t")
     # first check if lat and lon exist
-    if not f[hdict["decimallatitude"]] or not f[hdict["decimallongitude"]]:
+    if not f[hdict["decimalLatitude"]] or not f[hdict["decimalLongitude"]]:
         continue
 
     name = f[hdict["species"]]

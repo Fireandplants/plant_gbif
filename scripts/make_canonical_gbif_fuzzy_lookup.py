@@ -17,10 +17,10 @@ import logging
 logger = logging.getLogger('tu_logger')
 logger.setLevel(logging.INFO)
 
-tanknames = read_names(codecs.open("../query_names/myco_species_expanded.txt", "r", "utf-8"))
-gbifnames = read_names(codecs.open("../query_names/gbif-occurrences-names_151014.txt", "r", "utf-8"))
+tanknames = read_names(codecs.open("../query_names/tanknames-expanded.txt", "r", "utf-8"))
+gbifnames = read_names(codecs.open("../query_names/gbif-occurrences-names_141023.txt", "r", "utf-8"))
 # outputs
-gbif_lookup_file = "../query_names/gbif_myco_lookup_151015.csv"
+gbif_lookup_file = "../query_names/gbif_tank_lookup_141024.csv"
 
 outf = codecs.open(gbif_lookup_file, "w", "utf-8")
 # print(gbifnames[1:10])
