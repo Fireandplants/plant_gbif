@@ -35,30 +35,29 @@ def makeHeaderDict(s):
         hdict[h]=i
     return hdict
 
-
 def cleanField(s):
     return s.replace('"', '\\"').replace('\n',' ')
 
-## make tpl dicts
+# make tpl dicts
 synonymize.make_tpl_dicts(codecs.open(synonymize.TPL_FILE, "r", "utf-8"))
-## make canonical lookup in synonymize
+# make canonical lookup in synonymize
 synonymize.expand_names(goodnames) # necessary to make the canonial lookup
 
-## create fuzzy matches lookup table
+# create fuzzy matches lookup table
 fnames = {}
 fuzzyMatchesFile.readline()
 for l in fuzzyMatchesFile:
     fields = l.split(",")
     fnames[ fields[0][1:-1] ] = fields[1][1:-1] # lookup accepted to searched
 
-## get the list of fields we want
+# get the list of fields we want
 gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
-#print(gfields)
+# print(gfields)
 occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0006467-150922153815467.zip').open("0006467-150922153815467.csv", "r")
 output_file = codecs.open('../data/myco-gbif-occurrences_extracted_151022.csv', 'w', "utf-8")
-output_file.write("gbifname%sexpandedname%canonical_name%s" % 
-                 (output_field_sep, output_field_sep, output_field_sep))
+output_file.write("gbifname%sexpandedname%canonical_name%s" %
+                  (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields[0:-1]:
             output_file.write(h + output_field_sep)
 output_file.write(gfields[-1])
@@ -68,42 +67,42 @@ output_file.write("\n")
 for l in occurrences:
     l = codecs.decode(l, "utf-8")
     hdict = makeHeaderDict(l)
-    break # just read first line
+    break  # just read first line
 
-#print(hdict)
-#exit(0)
+# print(hdict)
+# exit(0)
 
 n = 0
 nmatches=0
 for l in occurrences:
     l = codecs.decode(l, "utf-8")
-    n = n + 1 
-    
+    n = n + 1
+
     f = l[:-1].split("\t")
-    # first check if lat and lon exist 
+    # first check if lat and lon exist
     if not f[hdict["decimallatitude"]] or not f[hdict["decimallongitude"]]:
         continue
 
-    name = f[hdict["species"]] 
-    res =  fnames.get(name)
-    if res :
+    name = f[hdict["species"]]
+    res = fnames.get(name)
+    if res:
         nmatches = nmatches+1
         resline = '"%s"%s"%s"%s' % (name, output_field_sep,  res, output_field_sep)
-        
+
         # to update progress:
-        if (nmatches % 5000 == 0) : 
-            print(str(n) + "\t" + str(nmatches) +": " + resline)
+        if (nmatches % 5000 == 0):
+            print(str(n) + "\t" + str(nmatches) + ": " + resline)
 
         tankname = synonymize.bad2good(res)
-        if tankname :  # write data if synonym could be matched back to tankname
+        if tankname:  # write data if synonym could be matched back to tankname
             # get all the needed fields
             resline = resline + tankname + output_field_sep
             # required if we use "," as sep:
-            field_vals = map(lambda x : '"%s"' % cleanField(f[hdict[x]]), gfields)
+            field_vals = map(lambda x: '"%s"' % cleanField(f[hdict[x]]), gfields)
             resline = resline + output_field_sep.join(field_vals)
             output_file.write(resline + "\n")
 
-    #if n > 10000 : break  # uncomment to test on first 10k records
+#    if n > 10000 : break  # uncomment to test on first 10k records
 
 output_file.flush()
 output_file.close()
