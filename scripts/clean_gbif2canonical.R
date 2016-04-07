@@ -25,7 +25,7 @@ unmatched <- allgbif[! allgbif %in% gbif2tank$gbif]
 length(unmatched)
 length(gbif2tank$gbif)
 
-tpl <- scan("../theplantlist1.1/tpl_accepted_and_syn", "character", sep="\n")
+tpl <- scan("../../taxon-name-utils/data/theplantlist1.1/tpl_accepted_and_syn", "character", sep="\n")
 
 # names that are both TPL names, mark them as suspect
 gbif2tank$bothtpl <- gbif2tank$gbif != gbif2tank$tank &
