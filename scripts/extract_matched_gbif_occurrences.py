@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 
-## script to cycle through entire huge gbif plantae data dump and check each
-## name against the fuzzy match table (expanded tank et al names to gbif names
-## lookup).
+# script to cycle through entire huge gbif plantae data dump and check each
+# name against the fuzzy match table (expanded tank et al names to gbif names
+# lookup).
 
-## Note that rather than using the "merge" action provided by the command line
-## synonymize.py script, this script imports synonymize and uses some functions
-## directly. This is in the interest of speed: it takes a long time to go
-## through ~140 million gbif records, let's only do it once and get the
-## canonical name while we are visiting each record.
+# Note that rather than using the "merge" action provided by the command line
+# synonymize.py script (in taxon-name-utils), this script imports synonymize
+# and uses some functions directly. This is in the interest of speed: it takes
+# a long time to go through ~140 million gbif records, let's only do it once
+# and get the canonical name while we are visiting each record.
 
 import zipfile as zf
-import synonymize
 import codecs
 
-#output_field_sep = "\t"
+# from taxon-names-utils:
+import sys
+sys.path.insert(0, '../../taxon-name-utils/scripts')
+import synonymize
+
 output_field_sep = ","
 
 fuzzyMatchesFile = codecs.open("../query_names/gbif_myco_lookup_151016_final.csv","r", "utf-8")
