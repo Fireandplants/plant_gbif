@@ -29,16 +29,18 @@ for (i in seq_along(genus_list)) {
     dat = dat[order(as.character(dat$tankname)), ]
     ## now begin exporting process
     subfields = c("tankname", "decimallongitude", "decimallatitude")
+    file1 = paste('gbif_all_remote_data_', Sys.Date(), '.csv', sep='')
+    file2 = paste('gbif_coords_', Sys.Date(), '.csv', sep='')
     if (i == 1) {
-        write.table(dat, file=file.path(output_dir, 'gbif_all_remote_data.csv'),
+        write.table(dat, file=file.path(output_dir, file1),
                     sep=',', row.names=F)
-        write.table(dat[ , subfields], file=file.path(output_dir, 'gbif_coords.csv'),
+        write.table(dat[ , subfields], file=file.path(output_dir, file2),
                     sep=',', row.names=F)
     }
     else {
-        write.table(dat, file=file.path(output_dir,'gbif_all_remote_data.csv'), 
+        write.table(dat, file=file.path(output_dir, file1), 
                     sep=',', row.names=F, append=TRUE, col.names=FALSE)
-        write.table(dat[ , subfields], file=file.path(output_dir, 'gbif_coords.csv'),
+        write.table(dat[ , subfields], file=file.path(output_dir, file2),
                     sep=',', row.names=F, append=TRUE, col.names=FALSE)                
     }
     rm(dat)
