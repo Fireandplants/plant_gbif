@@ -74,7 +74,6 @@ foreach(i = 1:length(file_names), .inorder = FALSE) %dopar% {
     dat$countrycode = sub('NA', 'NAm', dat$countrycode)
     indices = match(dat$countrycode, countryDat$code)
     continent = as.character(countryDat$continent[indices])
-    true = !is.na(dat$countrycode) & !is.na(continent)
     ## now we ask if the recorded country and continent match what the lat/lon
     ## indicate (i.e., the pts object)
     gbif_geog = over(pts, countryDat) 
