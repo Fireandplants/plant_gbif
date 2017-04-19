@@ -14,11 +14,7 @@ library(foreach)
 library(doSNOW) 
 library(snowfall)
 
-inputDir = './data'
-outputDir = './data'
-
-
-dat = read_csv('./data/gbif_all_remote_data.csv', n_max=1e4)
+dat = read_csv('./data/gbif_all_remote_data.csv')
 
 # cover negative values from the wise soil data to NAs
 dat$TOTN = ifelse(dat$TOTN < 0, NA, dat$TOTN)
@@ -28,7 +24,7 @@ spNames = dat$tankname
 spList = sort(unique(spNames))
 
 ## now compute n, means and variances
-colnames = c("decimalLatitude", "decimalLongitude", "year", 
+colnames = c("decimallatitude", "decimallongitude", "year", 
              "mat", "mdr", "iso", "tseas", "tmax", "tmin", "tar",
              "twetq", "tdryq", "twarmq", "tcoldq", "ap",
              "pwet", "pdry", "pseas", "pwetq", "pdryq", 
