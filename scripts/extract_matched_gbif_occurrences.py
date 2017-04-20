@@ -20,12 +20,14 @@ import synonymize
 
 output_field_sep = ","
 
-fuzzyMatchesFile = codecs.open("../query_names/gbif_tank_lookup_final.csv","r", "utf-8")
-fieldsFile =       codecs.open("../query_names/gbif_fields.txt", "r", "utf-8")
+fuzzyMatchesFile = codecs.open("../query_names/gbif_tank_lookup_final_170420.csv",
+                               "r", "utf-8")
+fieldsFile = codecs.open("../query_names/gbif_fields.txt", "r", "utf-8")
 
-CANONICAL_NAMES= codecs.open("../../bigphylo/species/big-phylo-leaves.txt", "r", "utf-8")
+CANONICAL_NAMES = codecs.open("../../bigphylo/species/big-phylo-leaves.txt", "r", "utf-8")
 goodnames = synonymize.read_names(CANONICAL_NAMES)
 goodnames = set(goodnames)
+
 
 # Turn a space separated header line into a dictionary that looks up indices
 def makeHeaderDict(s):
@@ -35,28 +37,29 @@ def makeHeaderDict(s):
         hdict[h]=i
     return hdict
 
+
 def cleanField(s):
-    return s.replace('"', '\\"').replace('\n',' ')
+    return s.replace('"', '\\"').replace('\n', ' ')
 
 # make tpl dicts
 synonymize.make_tpl_dicts(codecs.open(synonymize.TPL_FILE, "r", "utf-8"))
 # make canonical lookup in synonymize
-synonymize.expand_names(goodnames) # necessary to make the canonial lookup
+synonymize.expand_names(goodnames)  # necessary to make the canonical lookup
 
 # create fuzzy matches lookup table
 fnames = {}
 fuzzyMatchesFile.readline()
 for l in fuzzyMatchesFile:
     fields = l.split(",")
-    fnames[ fields[0][1:-1] ] = fields[1][1:-1] # lookup accepted to searched
+    fnames[fields[0][1:-1]] = fields[1][1:-1]  # lookup accepted to searched
 
 # get the list of fields we want
 gfields = fieldsFile.readlines()
 gfields = map(lambda x: x.strip(), gfields)
 # print(gfields)
-occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0000911-150306150734599.zip').open("occurrence.txt", "r")
-output_file = codecs.open('../data/gbif-occurrences_extracted_150311.csv', 'w', "utf-8")
-output_file.write("gbifname%sexpandedname%canonical_name%s" %
+occurrences = zf.ZipFile('/mnt/scratch/gbif_plantae/0082884-160910150852091.zip').open("0082884-160910150852091.csv", "r")
+output_file = codecs.open('../data/gbif-occurrences_extracted_170420.csv', 'w', "utf-8")
+output_file.write("gbifname%sexpandedname%scanonical_name%s" %
                   (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields[0:-1]:
             output_file.write(h + output_field_sep)
