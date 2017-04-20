@@ -9,7 +9,8 @@ expanded name list.
 import codecs, datetime
 # from taxon-names-utils:
 import sys
-sys.path.insert(0, '../../taxon-name-utils/scripts') # to provide scripts in taxon-name-utils
+# to provide scripts in taxon-name-utils:
+sys.path.insert(0, '../../taxon-name-utils/scripts')
 from synonymize import read_names
 from fuzzy_match import fuzzy_match_name_list
 
@@ -18,9 +19,9 @@ logger = logging.getLogger('tu_logger')
 logger.setLevel(logging.INFO)
 
 tanknames = read_names(codecs.open("../query_names/tanknames-expanded.txt", "r", "utf-8"))
-gbifnames = read_names(codecs.open("../query_names/gbif-occurrences-names_141023.txt", "r", "utf-8"))
+gbifnames = read_names(codecs.open("../query_names/gbif-occurrences-names_170420.txt", "r", "utf-8"))
 # outputs
-gbif_lookup_file = "../query_names/gbif_tank_lookup_141024.csv"
+gbif_lookup_file = "../query_names/gbif_tank_lookup_170420.csv"
 
 outf = codecs.open(gbif_lookup_file, "w", "utf-8")
 # print(gbifnames[1:10])
