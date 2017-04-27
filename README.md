@@ -24,7 +24,7 @@ Our canonical names: `../../bigphylo/species/big-phylo-leaves.txt`.  We would li
 expand_canonical_names.sh
 ```
 
-This will create a names list, `../query_names/tanknames-expanded.txt`. This expanded names list includes each name in the original list and all synonyms.
+This will create a names list, `../query_names/tanknames-expanded.txt`. This expanded names list includes each name in the original list and all synonyms according to [The Plant List v1.1][TPL]
 
 #### 2. Extract all possible name binomials in the full GBIF occurrence data ####
 
@@ -38,30 +38,29 @@ This will create the names list. The current version is `../query_names/gbif-occ
 
 #### 3. Conduct fuzzy name matching ####
 
-This step creates a lookup table that associates every possible taxon binomial in the full GBIF Plantae occurrence database with its match in the expanded canonical names list created in step 1. The code uses `fuzzy_match.py` from the taxon-name-utils repository to do matching based on a combination of Levenshtein distances and Jaro-Winkler distbances. See the source files for details.
-
-We can create a lookup table that maps each name in this list to the expanded canonical names list, omitting any name that does not have a sufficiently close match according to the settings in `fuzzy_match.py`. A short python script accomplishes this:
+This step creates a lookup table that associates every possible taxon binomial in the full GBIF Plantae occurrence database with its match in the expanded canonical names list created in step 1. The code uses `fuzzy_match.py` from the taxon-name-utils repository to do matching based on a combination of Levenshtein distances and Jaro-Winkler distances. The matching algorithm is
 
 ```
 python make_canonical_gbif_fuzzy_lookup.py
 ```
 
-The resulting table is `../query_names/gbif_tank_lookup_170420.csv`. Raw, this results in 50494 matched names from the expanded canonical list, leaving 376138 unmatched GBIF names. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. Use `scripts/clean_gbif2canonical.R`. The lookup table saved by that R script is `gbif_tank_lookup_170420_cleaned.csv`.  After manually marking additional removals (false matches), the resulting file was saved as `gbif_tank_lookup_170420_cleaned_manual.csv`. The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as `gbif-tank_lookup_final.csv`. This holds 48,767 matches of which 3,154 are fuzzy matches.
+For every "expanded name" (canonical names and synonyms), go through all names in GBIF data and first match genus and then specific epithet. If there is no exact match, find the closest genus match that is within a Levenshtein distance of 2 and, within that genus, find the closest specific epithet within a Levenshtein distance of 3. "Closest" is defined by Jaro-Winkler similarity. 
+The resulting table is `../query_names/gbif_tank_lookup_170420.csv`. Raw, this results in 50494 matched names from the expanded canonical list, leaving 376138 unmatched GBIF names. The threshold distances hard-coded in the script above over-match by design. Therefore, this table requires a bit of cleaning in R to throw out a few false-positive matches. 
 
-The manual step could probably be eliminated with enough special cases hard-coded in the matching script. See the comments near the bottom of that R script for the rules used in manual marking for removal.
+This will overmatch so we now drop any suspect matches according to the following algorithm: 1) match with a Jaro-Winkler similarity of less than 0.94, any match for which both names are listed in The Plant List, and any match that involves a known change of meaning (eg "micro" vs macro" or Latin diminutive). 2) Any remaining match that only involves a Latin gender switch for the specific epithet or set of common spelling changes (eg "silvestris" vs "sylvestris") is marked as good. 3) The remaining suspect matches are hand checked and most marked for removal. The automatic parts of the steps above (steps 1 and 2) are executed by `clean_gbif2canonical.R`. 
+
+After manually marking additional removals (false matches), the resulting file was saved as `gbif_tank_lookup_170420_cleaned_manual.csv`. The R script above then reads in this modified version and throws away the rows marked as false positives and saves the result as `gbif-tank_lookup_final_170420.csv`.
 
 #### 4. Extract matching records from the GBIF Plantae data ####
 
-This step reads line by line through the 180 million GBIF occurrence records  and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_tank_lookup_final.csv`.
+This step reads line by line through all GBIF occurrence records  and extracts those for which 1) there is a latitude and longitude, and 2) for which the species name matches a name in `gbif_myco_lookup_final.csv`.
 
 ```
 python extract_matched_gbif_occurrences.py
 
 ```
-Total records scanned = 180344517
-Total matches found = 107705783
 
-This extraction step scanned 180,344,517 records and found 107,705,783 records matching our names. The result is saved as a large comma-separated file, current version is `.data/gbif-occurrences_extracted_170420.csv`. This is our full species occurrence data.
+The result is saved as a large comma-separated file, current version is `myco-gbif-occurrences_extracted_151022.csv`. This is our full species occurrence data, but it may have records with untrustworthy coordinates and therefore needs further cleaning.
 
 #### 5. Data cleaning ####
 
