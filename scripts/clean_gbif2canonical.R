@@ -2,9 +2,10 @@
 
 ## Dylan Schwilk
 
-## clean the results for running the myco2tankname fuzzy matching script. That
-## script intentially overmatches. The solution is to identify "suspects"
-## according to Jaro Winkler similarities. Keep clear gender switches and cull
+## clean the results for running the make_canonical_gbif_fuzzy_lookup.py fuzzy
+## matching script. That script intentially overmatches. The solution is to
+## identify "suspects" according to Jaro Winkler similarities, TPL, and
+## presenece/absence of gender switches. Keep clear gender switches and cull
 ## all suspect matches in which both names are a TPL name as those are probably
 ## false positives. Some additional manual checking is still necessary to catch
 ## some spelling hcanges that result in rather low JW similarities (eg
@@ -12,13 +13,14 @@
 
 library(stringr)
 
-gbif2tank <-  read.csv("../query_names/gbif_tank_lookup_141024.csv", stringsAsFactors=FALSE)
-names(gbif2tank) <- c("gbif","tank", "genus_jw", "se_jw", "gswitch")
-fmatches <- subset(gbif2tank, tank!=gbif)
+gbif2can <-  read.csv("../query_names/gbif_myco_lookup_151015.csv", stringsAsFactors=FALSE)
+names(gbif2can) <- c("gbif","canonical", "genus_jw", "se_jw", "gswitch")
+nrow(gbif2can)
+fmatches <- subset(gbif2can, canonical!=gbif)
 length(fmatches$gbif)
 
 
-allgbif <- read.csv("../query_names/gbif-occurrences-names_141023.txt",
+allgbif <- read.csv("../query_names/gbif-occurrences-names_151014.txt",
                     header=FALSE, stringsAsFactors=FALSE)$V1
 
 unmatched <- allgbif[! allgbif %in% gbif2tank$gbif]
@@ -47,8 +49,16 @@ length(subset(keep, se_jw < 0.96)$gbif)
 
 head(keep[with(keep, order(se_jw)),], 100)
 
+## Current table overmatches, so apply some rules for removal. Remove in
+## following cases:
+
+## Any genus mismatch when both species are in TPL
+keep <- keep %>% filter(!(genus_jw < 1 & bothtpl))
+
 # now manually check other suspects, so write to file.
-write.csv(keep, "../query_names/gbif_tank_lookup_141024_cleaned.csv", row.names=FALSE)
+
+# now manually check other suspects, so write to file.
+write.csv(keep, "../query_names/gbif_myco_lookup_151016_cleaned.csv", row.names=FALSE)
 
 ## The current lookup WILL contain overmatches, so now do some more removal
 ## manually:
@@ -64,11 +74,11 @@ write.csv(keep, "../query_names/gbif_tank_lookup_141024_cleaned.csv", row.names=
 ## should be automated but are not. Typical cases: "micro"/"macro",
 ## "florus"/"folius"
 
-checked_names <- read.csv("../query_names/gbif_tank_lookup_141024_cleaned_manual.csv",
+checked_names <- read.csv("../query_names/gbif_myco_lookup_151016_manual.csv",
                           stringsAsFactors=FALSE)
 
 checked_names$manual.remove[is.na(checked_names$manual.remove)] <- FALSE
 final.lookup <- subset(checked_names, ! (remove | manual.remove))
 
-write.csv(final.lookup, "../query_names/gbif_tank_lookup_final.csv",
+write.csv(final.lookup, "../query_names/gbif_myco_lookup_151016_final.csv",
            row.names=FALSE)
