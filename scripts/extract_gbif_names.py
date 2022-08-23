@@ -30,7 +30,8 @@ for l in occurences:
     break  # just read first line
 
 # get index of "species" field
-sp_index = hdict[u"species"]
+#sp_index = hdict[u"species"]
+sp_index = hdict[u"scientificname"]
 
 res = set()
 n = 0
