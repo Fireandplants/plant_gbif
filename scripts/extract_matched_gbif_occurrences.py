@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # script to cycle through entire huge gbif plantae data dump and check each
 # name against the fuzzy match table (expanded tank et al names to gbif names
@@ -18,12 +18,11 @@ import sys
 sys.path.insert(0, '../../taxon-name-utils/scripts')
 import synonymize
 
-output_field_sep = ","
+output_field_sep = "\t"
 
-fuzzyMatchesFile = codecs.open("../query_names/gbif_myco_lookup_151016_final.csv","r", "utf-8")
+fuzzyMatchesFile = codecs.open("../query_names/gbif_myco_lookup_220826_final.csv","r", "utf-8")
 fieldsFile =       codecs.open("../query_names/gbif_fields.txt", "r", "utf-8")
-
-CANONICAL_NAMES= codecs.open("../query_names/myco_species.txt", "r", "utf-8")
+CANONICAL_NAMES= codecs.open("../query_names/myco_species", "r", "utf-8")
 goodnames = synonymize.read_names(CANONICAL_NAMES)
 goodnames = set(goodnames)
 
@@ -38,38 +37,44 @@ def makeHeaderDict(s):
 def cleanField(s):
     return s.replace('"', '\\"').replace('\n',' ')
 
-# make tpl dicts
-synonymize.make_tpl_dicts(codecs.open(synonymize.TPL_FILE, "r", "utf-8"))
+# make wfo dicts
+synonymize.make_syn_dicts(codecs.open(synonymize.SYN_FILE, "r", "utf-8"))
 # make canonical lookup in synonymize
 synonymize.expand_names(goodnames) # necessary to make the canonial lookup
 
-# create fuzzy matches lookup table
+
+
+# create matches lookup table
 fnames = {}
-fuzzyMatchesFile.readline()
+fuzzyMatchesFile.readline() # throw away header should be
+# canonical	gbif_match	gbif_full
 for l in fuzzyMatchesFile:
-    fields = l.split(",")
-    fnames[ fields[0][1:-1] ] = fields[1][1:-1] # lookup accepted to searched
+    fields = l.strip().split("\t")
+#    print(fields)
+    fnames[ fields[2] ] = fields[1] # lookup gbif_full to canonical expanded
+print("Total number of GBIF scientificName s: ", len(fnames.keys()))
+
 
 # get the list of fields we want
 gfields = fieldsFile.readlines()
-gfields = map(lambda x: x.strip(), gfields)
+gfields = list(map(lambda x: x.strip(), gfields))
 # print(gfields)
-occurrences = zf.ZipFile('/mnt/gis/gbif_plantae/0006467-150922153815467.zip').open("0006467-150922153815467.csv", "r")
-output_file = codecs.open('../data/myco-gbif-occurrences_extracted_151022.csv', 'w', "utf-8")
-output_file.write("gbifname%sexpandedname%canonical_name%s" %
+occurrences = zf.ZipFile('/mnt/data/gbif_plantae/0429903-210914110416597.zip').open("0429903-210914110416597.csv", "r")
+output_file = codecs.open('../data/myco-gbif-occurrences_extracted_220826.csv', 'w', "utf-8")
+output_file.write("gbifname%sexpandedname%scanonical_name%s" %
                   (output_field_sep, output_field_sep, output_field_sep))
 for h in gfields[0:-1]:
             output_file.write(h + output_field_sep)
 output_file.write(gfields[-1])
 output_file.write("\n")
 
-# get header
+# get header of gbif data
 for l in occurrences:
     l = codecs.decode(l, "utf-8")
     hdict = makeHeaderDict(l)
     break  # just read first line
 
-# print(hdict)
+#print(hdict)
 # exit(0)
 
 n = 0
@@ -80,26 +85,30 @@ for l in occurrences:
 
     f = l[:-1].split("\t")
     # first check if lat and lon exist
-    if not f[hdict["decimallatitude"]] or not f[hdict["decimallongitude"]]:
+    if not f[hdict["decimalLatitude"]] or not f[hdict["decimalLongitude"]]:
         continue
 
-    name = f[hdict["species"]]
+    name = f[hdict["scientificName"]]
     res = fnames.get(name)
+    #print('"' + name + '"')
+    
     if res:
         nmatches = nmatches+1
-        resline = '"%s"%s"%s"%s' % (name, output_field_sep,  res, output_field_sep)
-
+        resline = '%s%s%s%s' % (name, output_field_sep,  res, output_field_sep)
+       
         # to update progress:
         if (nmatches % 5000 == 0):
             print(str(n) + "\t" + str(nmatches) + ": " + resline)
 
-        tankname = synonymize.bad2good(res)
-        if tankname:  # write data if synonym could be matched back to tankname
+        myconame = synonymize.bad2good(res)
+        #print(res, myconame)
+        if myconame:  # write data if synonym could be matched back to canonical name
             # get all the needed fields
-            resline = resline + tankname + output_field_sep
+            resline = resline + myconame + output_field_sep
             # required if we use "," as sep:
             field_vals = map(lambda x: '"%s"' % cleanField(f[hdict[x]]), gfields)
             resline = resline + output_field_sep.join(field_vals)
+            #print(resline)
             output_file.write(resline + "\n")
 
 #    if n > 10000 : break  # uncomment to test on first 10k records

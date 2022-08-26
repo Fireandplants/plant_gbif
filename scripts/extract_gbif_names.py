@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # Dylan W. Schwilk
 
@@ -10,8 +10,8 @@ import codecs
 
 # modify below to point to the raw gbif download as well as the desired output
 # file
-GBIF_ZIP_FILE = '/mnt/gis/gbif_plantae/0006467-150922153815467.zip'
-OUTPUT_FILE = '../query_names/gbif-occurrences-names_151014.txt'
+GBIF_ZIP_FILE = '/mnt/data/gbif_plantae/0429903-210914110416597.zip'
+OUTPUT_FILE = '../query_names/gbif-occurrences-names_220823'
 
 def makeHeaderDict(s):
     gbif_header = s[:-1].split("\t")
@@ -20,18 +20,19 @@ def makeHeaderDict(s):
         hdict[h] = i
     return hdict
 
-occurences = zf.ZipFile(GBIF_ZIP_FILE).open("0006467-150922153815467.csv", "r")
+occurences = zf.ZipFile(GBIF_ZIP_FILE).open("0429903-210914110416597.csv", "r")
 output_file = codecs.open(OUTPUT_FILE, 'w', "utf-8")
 
 # get header
 for l in occurences:
     l = codecs.decode(l, "utf-8")
     hdict = makeHeaderDict(l)
+    print(hdict)
     break  # just read first line
 
 # get index of "species" field
 #sp_index = hdict[u"species"]
-sp_index = hdict[u"scientificname"]
+sp_index = hdict[u"scientificName"]
 
 res = set()
 n = 0
