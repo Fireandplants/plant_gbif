@@ -59,9 +59,11 @@ For every "expanded name" (canonical names and synonyms), go through all names i
 This will overmatch so we now drop any suspect matches according to the following algorithm: 1) Any fuzzy match for which both names are listed in The World FLora Online database. 2) We conduct some tests to mark likely good matches asthose whose specific epithet invovles only a latin gender change, common typing mistakes and alternative spellings (caespitosa vs cespitosa, sylvestris, sylvestris). All fuzzy matches are then checked manually to avoid incorrect matches (match that involves a known change of meaning (eg "micro" vs macro" or Latin diminutives). Some of this could be automated as most false positives and likely good amtches follow a few common typing transpostions and spelling variations. But a manual cehck is safest.
 3) The remaining suspect matches are hand checked and most marked for removal. The automatic parts of the steps above (steps 1 and 2) are executed by `clean_gbif2canonical.R`. This produces the file for manual editing `gbif_myco_lookup_220826_cleaned.csv`
 
-Conduct the manual fixes by adding "TRUE" to the manual_remove column to remove incorrect matches. ON 2022-08-26, Schwilk removed 141 incorrect matches, leaving 844-141 = 703 fuzzy matches most of which appear to be spelling alternatives or data entry errors. overall, that leaves 24991 names extracted from gbif that can be matched to the expanded canonical names (canonical plus synonyms). We need to turn that matched names (missing authors) back to the full names so we can match precisely with the gbif scientificNames field. to do that run
+Conduct the manual fixes by adding "TRUE" to the manual_remove column to remove incorrect matches. ON 2022-08-26, Schwilk removed 141 incorrect matches, leaving 844-141 = 703 fuzzy matches most of which appear to be spelling alternatives or data entry errors. Overall, that leaves 24991 names extracted from gbif that can be matched to the expanded canonical names (canonical plus synonyms). We need to convert matched names (we ignored author portion of name) back to the full names so we can match precisely with the gbif `scientificName` field. To do that run
 
-`finish_gbif2canonical.R` to finalize the manual marks and to create a lookup table that includes the full strings for the canonical names as well as the full gbif `scientificName` field (with author) needed in the next step. The final lookup table has 24991 unique canonical (or synonym) names matched to 29472 gbif full scientificName field. The larger number of gbif scientificNames is beacause we match on full scientific names but omit authors because of many minor variations in how authors are specified. The created file is `gbif_myco_lookup_220826_final.csv`
+`finish_gbif2canonical.R` 
+
+to finalize the manual marks and to create a lookup table that includes the full strings for the canonical names as well as the full gbif `scientificName` field (with author) needed in the next step. The final lookup table has 24991 unique canonical+synonym names matched to 29472 gbif full `scientificName` field names. The larger number of gbif scientificNames is beacause we match on full scientific names but omit authors because of many minor variations in how authors are specified in gbif data from heterogenous sources. The created file is `gbif_myco_lookup_220826_final.csv`
 
 #### 4. Extract matching records from the GBIF Plantae data ####
 
@@ -73,17 +75,17 @@ python3 extract_matched_gbif_occurrences.py
 ```
 
 ```
-Total records scanned = 323,717,877
-
+Total records scanned = 323717877
+Total matches found   = 189072622
 ```
 
-The result is saved as a large tab-separated file, current version is `myco-gbif-occurrences_extracted_.csv`. This is our full species occurrence data, but it WILL have records with untrustworthy coordinates and therefore needs further cleaning.
+The result is saved as a large tab-separated file, current version is `myco-gbif-occurrences_extracted_.csv`. This is our full species occurrence data, but it WILL have records with untrustworthy coordinates, it will include opbservations from horticultural plants (eg NY City Parks!) and therefore needs further cleaning. This file uncompressed is 46 GB and its MD5sum is bc5a6584d47670f45c2e927db4a960d4. I then compressed that file using xz compression to about 3 GB to send to Dan McGlinn.
 
-#### 5. Data cleaning ####
+#### 5. Data cleaning ##bu##
 
 This file goes to Dan McGlinn for further cleaning.
 
-[TODO] add cleaning steps.
+[TODO] add cleaning steps. Need to update to current methods
 
 
 [GBIF]: http://www.gbif.org/
