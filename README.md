@@ -39,7 +39,7 @@ prepare_names_lists.sh
 ```
 
 
-What it does: There are 5284 plant taxa with mycorrizal state information from Maherali 2016: `../query_names/myco_species` . We expand this out to those names plus all synonyms using `taxon-names-tools/synonymize.py`. We use [Worl Flora Online][WFO] v.2022.07	Jul. 12, 2022. (see https://github.com/schwilklab/taxon-name-utils).
+What it does: There are 5284 plant taxa with mycorrizal state information from Maherali 2016: `../query_names/myco_species` . We expand this out to those names plus all synonyms using `taxon-names-tools/synonymize.py`. We use [World Flora Online][WFO] v.2022.07	Jul. 12, 2022. (see https://github.com/schwilklab/taxon-name-utils).
 
 This will create a names list, `../query_names/myco_species_expanded`. This expanded names list includes each name in the original list and all synonyms according to [The World Flora Online backbone data][WFO]
 
