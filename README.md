@@ -1,7 +1,7 @@
 myco-soil-climate
 =================
 
-This repository is for data and scripts for the "mycorrhizal soil/climate" analyses. It is a branch of the plant_gbif repo
+This repository is for data and scripts for the "mycorrhizal soil/climate" analyses. It is a branch of the plant_gbif repo which contains branches for other related projects with similar workflows.
 
 Note: one thing I (Schwilk) have not cleaned up is that all of Schwilk's scripts (python or R) assume that the "scripts" directory is the working directory. McGlinn's scripts assume that "." is the working directory.
 
