@@ -12,7 +12,7 @@ Matching the taxon names with plant occurrence records in the [Global Biodiversi
 
 These scripts read text files as utf-8 and immediately treat as unicode internally. All matching and comparisons work on unicode internally. All written output is encoded as utf-8. This has a slight speed penalty but is worth it and necessary as there are unicode characters in the GBIF data and some in other taxon name sources.
 
-A note on scientific names: Tow input data sources only inlcude latin binomials as the species names. These are not full scientific names weith authors nor do any taxa in the two original data sources (Tank et al tree and mycorrizal state state information data) include an infraspecific epithets. When we do name epxansion to synonyms and match against gbif data, we do include infraspecific epithets. We ignore authors when matching to species ebcause that information is missing.
+A note on scientific names: The input data sources only inlcude latin binomials as the species names. These are not full scientific names weith authors nor do any taxa in the two original data sources (Tank et al tree and mycorrizal state state information data) include an infraspecific epithets. When we do name epxansion to synonyms and match against gbif data, we do include infraspecific epithets. We ignore authors when matching to species ebcause that information is missing.
 
 ### Analysis steps / walkthrough ###
 
@@ -79,7 +79,7 @@ Total records scanned = 323717877
 Total matches found   = 189072622
 ```
 
-The result is saved as a large tab-separated file, current version is `myco-gbif-occurrences_extracted_.csv`. This is our full species occurrence data, but it WILL have records with untrustworthy coordinates, it will include opbservations from horticultural plants (eg NY City Parks!) and therefore needs further cleaning. This file uncompressed is 46 GB and its MD5sum is bc5a6584d47670f45c2e927db4a960d4. I then compressed that file using xz compression to about 3 GB to send to Dan McGlinn.
+The result is saved as a large tab-separated file, current version is `data/myco-gbif-occurrences_extracted_.csv`. This is our full species occurrence data, but it WILL have records with untrustworthy coordinates, it will include observations from horticultural plants (eg NY City Parks!) and therefore needs further cleaning. This file uncompressed is 46 GB and its MD5sum is bc5a6584d47670f45c2e927db4a960d4. I then compressed that file using xz compression to about 3 GB to send to Dan McGlinn.
 
 #### 5. Data cleaning ##bu##
 
