@@ -1,9 +1,11 @@
-myco-soil-climate
+plant_gbif
 =================
 
-This repository is for data and scripts for the "mycorrhizal soil/climate" analyses. It is a branch of the plant_gbif repo which contains branches for other related projects with similar workflows.
+This repository is for data and scripts for matching taxon names to GBIF occurrence data. The master branch represents the current project investigating abandonment of the arbuscular mycorrhizal mutualisms across angiosperms. It currently mirrors the myco-evol-project branch. The plant_gbif repo contains branches for other related projects with similar workflows.
 
 Note: one thing I (Schwilk) have not cleaned up is that all of Schwilk's scripts (python or R) assume that the "scripts" directory is the working directory. McGlinn's scripts assume that "." is the working directory.
+
+Current release: [![DOI](https://zenodo.org/badge/17485158.svg)](https://zenodo.org/doi/10.5281/zenodo.11282177)
 
 Matching GBIF occurrence records
 --------------------------------
