@@ -16,9 +16,9 @@ dir.create('./data/gbif_chunks')
 ## Part I - Break up GBIF data dump into smaller files-----------------------
 script_file = './scripts/split-csv.py'
 options = '-v -d'
-nlines = '-n 1000000'
+nlines = '-n 5000000'
 log_file = './log_files/chunk_gbif.log'
-input_file = './data/myco-gbif-occurrences_extracted_151022.csv'
+input_file = './data/myco-gbif-occurrences_extracted_220826.csv'
 
 cmd = paste('python', script_file, options, nlines,
             '-o./data/gbif_chunks/chunk-', input_file, '>', log_file, '2>&1')
@@ -44,6 +44,22 @@ log_file = './log_files/climate_query.log'
 
 cmd = paste('Rscript', script_file, '>', log_file, '2>&1')
 system(cmd, wait=F)
+
+
+## Part IVb - catch climate query missing files ----------------
+script_file = './scripts/geog_filter/make_list_of_missing_files.R'
+log_file = './log_files/make_list_of_missing_files.log'
+
+cmd = paste('Rscript', script_file, '>', log_file, '2>&1')
+system(cmd, wait=F)
+
+## Part IVc - rerun climate query but on missing files-----------------
+script_file = './scripts/geog_filter/climate_query_catch_missing.R'
+log_file = './log_files/climate_query_catch_missing.log'
+
+cmd = paste('Rscript', script_file, '>', log_file, '2>&1')
+system(cmd, wait=F)
+
 
 ## Part V - Compile all records, drop remaining duplicates, and export-------
 script_file = './scripts/geog_filter/export_all_records.R'

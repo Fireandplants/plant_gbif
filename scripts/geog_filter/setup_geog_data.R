@@ -49,7 +49,7 @@ country$CNTRY_NAME[!tolower(country$CNTRY_NAME) %in% tolower(countryCode[,1])]
 indices = match(tolower(country$CNTRY_NAME), tolower(countryCode[,1]))
 countryDat = cbind(country, cc, countryCode[indices, 2])
 names(countryDat) = c(names(country), 'continent', 'code')
-countryDat = SpatialPolygonsDataFrame(Sr = country, data = countryDat,
+countryDat = SpatialPolygonsDataFrame(Sr = country, data = countryDat@data,
              match.ID = TRUE)
 ## now we can go to the GBIF data and based upon the 2 letter country 
 ## interpreted field look up the proposed continent of the record and check
