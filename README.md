@@ -83,11 +83,62 @@ Total matches found   = 189072622
 
 The result is saved as a large tab-separated file, current version is `data/myco-gbif-occurrences_extracted_.csv`. This is our full species occurrence data, but it WILL have records with untrustworthy coordinates, it will include observations from horticultural plants (eg NY City Parks!) and therefore needs further cleaning. This file uncompressed is 46 GB and its MD5sum is bc5a6584d47670f45c2e927db4a960d4. I then compressed that file using xz compression to about 3 GB to send to Dan McGlinn.
 
-#### 5. Data cleaning ##bu##
+Data cleaning and GIS queries 
+------------------------------
 
-This file goes to Dan McGlinn for further cleaning.
+The next steps of the data processing removed possibly erroneous data, queried 
+various GIS databases for environmental variables, and lastly summarized 
+the spatial and environmental conditions at the species level. 
 
-[TODO] add cleaning steps. Need to update to current methods
+The script to run this entire process is `./scripts/geog_filter/run_all.R`
+
+GBIF records were removed from the dataset using `./scripts/geog_filter/geog_filter.R`
+if they were found to have any of the following attributes: 
+- a duplicated record
+- non-numeric coordinates 
+- coordinates without reasonable range 
+- coordinates that equal to exactly 0
+- were located within 0.01 decimal degree of Cophenhagen, Denmark (GBIF headquaters)
+- latitude was equal longitude 
+- the coordinates where low resolution (i.e., did not record to the hundredth
+   place in decimal degrees)
+- located within 0.01 decimal degree of a country's centroid
+- coordinate of the record must match the country or continent that was recorded
+   for the record. This effectively removed any points falling in the ocean
+   as well. 
+
+The script `./scripts/geog_filter/climate_query.R` carried out the following
+environmental queries using GIS databases. 
+
+The WorldClim database was queried for mean annual temperature and annual
+precipitation data (Hijmans et al. 2005).
+
+The International Soil Reference and Information Centre (ISRIC)
+world soil information database was used for total soil Nitrogen (N) (Batjes 2012). 
+
+The Global Gridded Soil Phosphorus Distribution Maps database from the Oak Ridge
+Oak Ridge National Laboratory Distributed Active Archive Center for labile inorganic
+phosphorus (P) content (Yang et al. 2014).
+
+Lastly, the script `./scripts/geog_filter/climate_summary.R` was used to compute
+the median and 95% quantile of all the enviornmental and spatial variables at the
+species level. 
+
+References
+----------
+Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G. and Jarvis, A., 2005.
+Very high resolution interpolated climate surfaces for global land areas.
+International journal of climatology, 25(15), pp.1965-1978.
+
+Batjes, N.H., 2012. ISRIC-WISE Derived Soil Properties on a 5 by 5 Arc-minutes
+Global Grid (Version 1.2). ISRIC–World Soil Information, Wageningen, The
+Netherlands.
+
+Yang, X., W.M. Post, P.E. Thornton, and A. Jain. 2014. Global Gridded Soil
+Phosphorus Distribution Maps at 0.5-degree Resolution. Data set. Available
+on-line [http://daac.ornl.gov] from Oak Ridge National Laboratory Distributed
+Active Archive Center, Oak Ridge, Tennessee, USA.
+http://dx.doi.org/10.3334/ORNLDAAC/1223
 
 
 [GBIF]: http://www.gbif.org/
