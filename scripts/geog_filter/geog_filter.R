@@ -91,6 +91,9 @@ foreach(i = 1:length(file_names), .inorder = FALSE) %dopar% {
     fields = c('gbifname', 'expandedname', 'canonical_name', 'basisOfRecord',
                'decimalLatitude', 'decimalLongitude', 'year', 'countryCode', 
                'geocode', 'continent')
+    ## drop any points where the geocode is NA (i.e., the point does not fall on 
+    ## at least the continent where it was said to have occurred in its 
+    ## country field)
     dat = subset(dat, !is.na(geocode), fields)
     filename = sub('chunk-', 'filter-', file_names[i])
     write_csv(dat, file=file.path(output_dir, filename))
