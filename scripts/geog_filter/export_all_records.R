@@ -23,12 +23,12 @@ for (i in seq_along(genus_list)) {
     }
     rm(dat_temp)
     ## drop duplicates
-    filtering_columns = c('tankname', 'decimallatitude', 'decimallongitude')
+    filtering_columns = c('canonical_name', 'decimalLatitude', 'decimalLongitude')
     dat = subset(dat, !duplicated(dat[ , filtering_columns]))
     ## order the rows alphabetically by species name
-    dat = dat[order(as.character(dat$tankname)), ]
+    dat = dat[order(as.character(dat$canonical_name)), ]
     ## now begin exporting process
-    subfields = c("tankname", "decimallongitude", "decimallatitude")
+    subfields = c("canonical_name", "decimalLongitude", "decimalLatitude")
     file1 = paste('gbif_all_remote_data_', Sys.Date(), '.csv', sep='')
     file2 = paste('gbif_coords_', Sys.Date(), '.csv', sep='')
     if (i == 1) {

@@ -14,17 +14,17 @@ library(foreach)
 library(doSNOW) 
 library(snowfall)
 
-dat = read_csv('./data/gbif_all_remote_data.csv')
+dat = read_csv('./data/gbif_all_remote_data_2022-10-05.csv')
 
 # cover negative values from the wise soil data to NAs
 dat$TOTN = ifelse(dat$TOTN < 0, NA, dat$TOTN)
 dat$TAWC = ifelse(dat$TAWC < 0, NA, dat$TAWC)
 
-spNames = dat$tankname
+spNames = dat$canonical_name
 spList = sort(unique(spNames))
 
 ## now compute n, means and variances
-colnames = c("decimallatitude", "decimallongitude", "year", 
+colnames = c("decimalLatitude", "decimalLongitude", "year", 
              "mat", "mdr", "iso", "tseas", "tmax", "tmin", "tar",
              "twetq", "tdryq", "twarmq", "tcoldq", "ap",
              "pwet", "pdry", "pseas", "pwetq", "pdryq", 
@@ -46,8 +46,10 @@ sfStop()
 
 quantMatrix = matrix(unlist(quantList),nrow=length(spList),ncol=ncol(datSub)*3)
 ## output climate 
-climFileHeader = c('tankname', 'count', paste(rep(names(datSub),each=3),
+climFileHeader = c('canonical_name', 'count', paste(rep(names(datSub),each=3),
                                               c('.lo','.me','.hi'),sep=''))
 climOut = data.frame(spList, ns, quantMatrix)
 names(climOut) = climFileHeader
 write_csv(climOut, path='./data/gbif_climate_summary.csv')
+
+print('summary complete')

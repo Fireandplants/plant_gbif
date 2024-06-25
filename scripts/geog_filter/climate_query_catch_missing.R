@@ -34,9 +34,20 @@ p_grid = stack('./data/p_grid.grd')
 ## load wwf ecoregions
 load('./data/wwfeco.Rdata')
 
-file_names = dir(input_dir)[grep('filter-', dir(input_dir))]
+#file_names = dir(input_dir)[grep('filter-', dir(input_dir))]
 
-sfInit(parallel=TRUE, cpus=24, type="SOCK")
+# import files missing from processed list: 
+missing_files <- read.table('./data/missing_from_genus_sort.txt')
+missing_files <- missing_files$x
+
+# now identify which files in filtered results need to be imported to fill
+# in the missing genus results
+missing_chunk_names <- unique(sapply(strsplit(missing_files, '-', fixed = TRUE), function(x) x[2]))
+missing_chunk_names <- paste('filter-', missing_chunk_names, sep='')
+
+file_names <- missing_chunk_names
+
+sfInit(parallel=TRUE, cpus=20, type="SOCK")
 sfLibrary(raster)
 sfLibrary(foreign)
 sfLibrary(nlme)
@@ -44,13 +55,21 @@ sfLibrary(readr)
 registerDoSNOW(sfGetCluster())
 
 ## create a seperate file for each genus
-foreach(i = 1:length(file_names), .inorder = FALSE) %dopar% {
+foreach(i = 1:length(file_names), .inorder = TRUE) %dopar% {
     dat = read_csv(file.path(input_dir, file_names[i]))
     ## pull genus out of name column
     genus = sapply(strsplit(as.character(dat$canonical_name),' '), function(x) unlist(x)[1])
-    genus_list = sort(unique(genus))
-    ## go through genus list and pull all records for each species together
+    #genus_list = sort(unique(genus))
+    ## go through missing file list and pull all records for each species together
     ## extract climate data and then export the information
+    ## Now we only need to loop along the genera that are missing from this 
+    ## chunk 
+    # first isolate part of missing file
+    missing_file_suffix <- sapply(strsplit(missing_files, '-'), function(x) x[2])
+    relevant_missing_files <- which(missing_file_suffix == sub('filter-', '',
+                                                               file_names[i]))
+    genus_list <- sapply(strsplit(missing_files[relevant_missing_files], '-'),
+                         function(x) x[1])
     for (j in seq_along(genus_list)) { 
         dat_temp = dat[genus == genus_list[j], ]
         col_names = names(dat_temp)
@@ -73,7 +92,7 @@ foreach(i = 1:length(file_names), .inorder = FALSE) %dopar% {
                            'TOTN', 'TAWC', 'eco_code')
         out_file = paste(output_dir, genus_list[j], 
                          strsplit(file_names[i], 'filter')[[1]][2], sep='')
-        write_csv(dat_temp, path=out_file)
+        write_csv(dat_temp, file=out_file)
         print(paste('genus', j, 'of', length(genus_list), sep=' '))
         
     }
